@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Báo cáo Google Ads</title>
+<title>Báo cáo Digital Ads</title>
 <style>
   :root {
     color-scheme: light;
@@ -31,7 +31,6 @@
   body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.45 var(--font); }
   button, input, select { font: inherit; color: inherit; }
   .wrap { max-width: 1280px; margin: 0 auto; padding: 0 16px; }
-  .num { font-variant-numeric: tabular-nums; }
   .muted { color: var(--muted); }
   .hidden { display: none !important; }
 
@@ -42,13 +41,18 @@
   .top .actions { display: flex; gap: 8px; }
   .btn { border: 1px solid var(--border); background: var(--surface); color: var(--navy); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 550; }
   .btn:hover { background: var(--navy-soft); }
-  .btn:focus-visible, .chip:focus-visible, select:focus-visible, input:focus-visible, th button:focus-visible, .bar-row:focus-visible, .chart:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+  .btn:focus-visible, .chip:focus-visible, .tab:focus-visible, select:focus-visible, input:focus-visible, th button:focus-visible, .bar-row:focus-visible, .chart:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
   .top .btn { background: transparent; color: #fff; border-color: rgba(255,255,255,.45); }
   .top .btn:hover { background: rgba(255,255,255,.12); }
   .btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); padding: 10px 18px; }
   .btn.primary:hover { background: #0a3378; }
   .sync { background: var(--surface); border-bottom: 1px solid var(--border); color: var(--muted); font-size: 13px; }
   .sync .wrap { padding-top: 8px; padding-bottom: 8px; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .tabs { background: var(--surface); border-bottom: 1px solid var(--border); }
+  .tabs .wrap { display: flex; gap: 4px; overflow-x: auto; }
+  .tab { border: 0; background: none; padding: 12px 14px 10px; cursor: pointer; color: var(--muted); font-weight: 600; border-bottom: 3px solid transparent; white-space: nowrap; }
+  .tab:hover { color: var(--navy); }
+  .tab[aria-selected="true"] { color: var(--navy); border-bottom-color: var(--navy); }
 
   /* Cổng đăng nhập */
   .gate { max-width: 640px; margin: 48px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; }
@@ -82,15 +86,15 @@
   .card h2 { margin: 0 0 4px; font-size: 15px; color: var(--navy); font-weight: 650; }
   .card .sub { margin: 0 0 12px; font-size: 12.5px; color: var(--muted); }
   .card-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 16px; }
-  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 16px; }
   .grid2 > .card { margin-bottom: 0; min-width: 0; }
   .loading main { opacity: .55; transition: opacity .15s; pointer-events: none; }
 
   /* Thẻ KPI */
-  .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 10px; margin-bottom: 8px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(184px, 1fr)); gap: 10px; margin-bottom: 8px; }
   .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; min-width: 0; }
   .tile .lbl { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tile .val { font-size: 22px; font-weight: 650; color: var(--navy); margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tile .val { font-size: 20px; font-weight: 650; color: var(--navy); margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tile .prev { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tile .delta { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
   .tile .delta.good { color: var(--good-text); }
@@ -102,7 +106,7 @@
   .comments { margin: 0; padding-left: 18px; }
   .comments li { margin: 4px 0; color: var(--ink-2); }
 
-  /* Biểu đồ xu hướng */
+  /* Biểu đồ */
   .seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
   .seg .chip { height: 30px; font-size: 13px; }
   .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); margin: 4px 0 6px; }
@@ -130,6 +134,7 @@
   .bar-row .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; }
   .bar-track { height: 12px; }
   .bar { height: 12px; background: var(--series-1); border-radius: 0 4px 4px 0; min-width: 2px; }
+  .bar.fb { background: var(--series-2); }
   .bar-row .v { font-size: 12.5px; color: var(--ink-2); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
   /* Bảng */
@@ -147,6 +152,7 @@
   tbody tr:hover td { background: #f7f9fd; }
   tbody tr.click { cursor: pointer; }
   tfoot td { font-weight: 650; background: var(--navy-soft); border-bottom: 0; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
   .badge { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; }
   .badge i { font-style: normal; display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; font-size: 10px; color: #fff; }
   .badge.critical i { background: var(--critical); }
@@ -178,7 +184,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <h1>Báo cáo hiệu quả Google Ads</h1>
+    <h1>Báo cáo hiệu quả Digital Ads · Microlife</h1>
     <div class="actions">
       <button class="btn hidden" id="btn-reload" type="button">Tải lại số liệu</button>
       <button class="btn hidden" id="btn-signout" type="button">Đăng xuất</button>
@@ -190,6 +196,7 @@
 <section class="gate" id="gate" aria-live="polite"></section>
 
 <div id="app" class="hidden">
+  <nav class="tabs" aria-label="Nền tảng"><div class="wrap" id="tabs" role="tablist"></div></nav>
   <nav class="filters" aria-label="Bộ lọc">
     <div class="wrap">
       <div class="field">
@@ -198,9 +205,11 @@
       </div>
       <div class="field date"><label for="f-from">Từ ngày</label><input type="date" id="f-from"></div>
       <div class="field date"><label for="f-to">Đến ngày</label><input type="date" id="f-to"></div>
-      <div class="field"><label for="f-acc">Tài khoản</label><select id="f-acc"></select></div>
-      <div class="field camp"><label for="f-camp">Chiến dịch</label><select id="f-camp"></select></div>
-      <div class="field"><label for="f-type">Loại chiến dịch</label><select id="f-type"></select></div>
+      <div class="field" data-view="ga"><label for="f-acc">Tài khoản</label><select id="f-acc"></select></div>
+      <div class="field camp" data-view="ga"><label for="f-camp">Chiến dịch</label><select id="f-camp"></select></div>
+      <div class="field" data-view="ga"><label for="f-type">Loại chiến dịch</label><select id="f-type"></select></div>
+      <div class="field camp" data-view="fb"><label for="f-fbcamp">Chiến dịch</label><select id="f-fbcamp"></select></div>
+      <div class="field" data-view="fb"><label for="f-fbobj">Mục tiêu Meta</label><select id="f-fbobj"></select></div>
       <div class="field"><label for="f-prod">Nhóm sản phẩm</label><select id="f-prod"></select></div>
       <div class="field"><label>&nbsp;</label><button class="chip" id="f-clear" type="button">Bỏ lọc</button></div>
       <div class="period" id="period"></div>
@@ -209,64 +218,140 @@
 
   <main class="wrap">
     <div id="notices"></div>
-    <div class="kpis" id="kpis-1"></div>
-    <div class="kpis" id="kpis-2"></div>
-    <p class="kpi-note">Chuyển đổi và giá trị chuyển đổi là số Google Ads ghi nhận theo conversion action, không phải số đơn hàng hay doanh thu thực thu. ROAS = giá trị chuyển đổi ÷ chi phí. Đơn hàng, doanh thu thực thu, CPO, CiR: chưa có dữ liệu, cần nguồn CRM.</p>
 
-    <section class="card">
-      <h2>Nhận xét</h2>
-      <p class="sub">Tự động theo số liệu và ngưỡng trong GA_Cấu hình.</p>
-      <ul class="comments" id="comments"></ul>
-    </section>
-
-    <section class="card">
-      <div class="card-head">
-        <div>
-          <h2 id="trend-title">Xu hướng</h2>
-          <p class="sub" id="trend-sub"></p>
-        </div>
-        <div class="seg" id="metric-seg" role="group" aria-label="Chỉ số"></div>
-      </div>
-      <div class="legend" id="trend-legend"></div>
-      <div class="chart-wrap" id="trend-wrap"></div>
-      <details class="table-view"><summary>Xem bảng số liệu xu hướng</summary><div class="table-scroll" id="trend-table"></div></details>
-    </section>
-
-    <div class="grid2">
+    <!-- Tổng thể -->
+    <div id="view-all">
+      <div class="kpis" id="all-kpis"></div>
+      <p class="kpi-note">Chi phí và lượt hiển thị cộng được giữa hai nền tảng. Lượt nhấp, chuyển đổi và kết quả được định nghĩa khác nhau ở Google và Facebook nên chỉ đặt cạnh nhau, không cộng chung.</p>
       <section class="card">
-        <h2>Phân bổ chi phí theo chiến dịch</h2>
-        <p class="sub">Bấm vào một chiến dịch để lọc cả trang.</p>
-        <div class="bars" id="alloc-camp"></div>
+        <h2>Nhận xét tổng thể</h2>
+        <p class="sub">Tự động theo số liệu hai nền tảng trong kỳ đang chọn.</p>
+        <ul class="comments" id="all-comments"></ul>
       </section>
       <section class="card">
-        <h2>Phân bổ theo nhóm sản phẩm</h2>
-        <p class="sub">Chiến dịch chưa ánh xạ nằm trong “Chưa phân loại”, vẫn được tính vào tổng.</p>
-        <div class="bars" id="alloc-prod"></div>
-        <div class="table-scroll" id="prod-table" style="margin-top:12px"></div>
+        <h2>So sánh theo nền tảng</h2>
+        <p class="sub">Bấm tên nền tảng để mở báo cáo chi tiết.</p>
+        <div class="table-scroll" id="all-platforms"></div>
+      </section>
+      <section class="card">
+        <div class="card-head">
+          <div><h2 id="all-trend-title">Xu hướng</h2><p class="sub" id="all-trend-sub"></p></div>
+          <div class="seg" id="all-metric" role="group" aria-label="Chỉ số"></div>
+        </div>
+        <div class="legend" id="all-legend"></div>
+        <div class="chart-wrap" id="all-chart"></div>
+        <details class="table-view"><summary>Xem bảng số liệu xu hướng</summary><div class="table-scroll" id="all-trend-table"></div></details>
+      </section>
+      <div class="grid2">
+        <section class="card">
+          <h2>Chi phí theo nhóm sản phẩm</h2>
+          <p class="sub">Chiến dịch chưa ánh xạ nằm trong “Chưa phân loại”, vẫn được tính vào tổng.</p>
+          <div class="table-scroll" id="all-products"></div>
+        </section>
+        <section class="card">
+          <h2>Tổng hợp theo tháng</h2>
+          <p class="sub">Các tháng nằm trong khoảng ngày đang chọn.</p>
+          <div class="table-scroll" id="all-months"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Google Ads -->
+    <div id="view-ga" class="hidden">
+      <div class="kpis" id="ga-kpis-1"></div>
+      <div class="kpis" id="ga-kpis-2"></div>
+      <p class="kpi-note">Chuyển đổi và giá trị chuyển đổi là số Google Ads ghi nhận theo conversion action, không phải số đơn hàng hay doanh thu thực thu. ROAS = giá trị chuyển đổi ÷ chi phí. Đơn hàng, doanh thu thực thu, CPO, CiR: chưa có dữ liệu, cần nguồn CRM.</p>
+      <section class="card">
+        <h2>Nhận xét Google Ads</h2>
+        <p class="sub">Tự động theo số liệu và ngưỡng trong GA_Cấu hình.</p>
+        <ul class="comments" id="ga-comments"></ul>
+      </section>
+      <section class="card">
+        <div class="card-head">
+          <div><h2 id="ga-trend-title">Xu hướng</h2><p class="sub" id="ga-trend-sub"></p></div>
+          <div class="seg" id="ga-metric" role="group" aria-label="Chỉ số"></div>
+        </div>
+        <div class="legend" id="ga-legend"></div>
+        <div class="chart-wrap" id="ga-chart"></div>
+        <details class="table-view"><summary>Xem bảng số liệu xu hướng</summary><div class="table-scroll" id="ga-trend-table"></div></details>
+      </section>
+      <div class="grid2">
+        <section class="card">
+          <h2>Phân bổ chi phí theo chiến dịch</h2>
+          <p class="sub">Bấm vào một chiến dịch để lọc cả trang.</p>
+          <div class="bars" id="ga-alloc-camp"></div>
+        </section>
+        <section class="card">
+          <h2>Phân bổ theo nhóm sản phẩm</h2>
+          <p class="sub">Chiến dịch chưa ánh xạ nằm trong “Chưa phân loại”, vẫn được tính vào tổng.</p>
+          <div class="bars" id="ga-alloc-prod"></div>
+          <div class="table-scroll" id="ga-prod-table" style="margin-top:12px"></div>
+        </section>
+      </div>
+      <section class="card">
+        <h2>Hiệu quả theo chiến dịch</h2>
+        <p class="sub" id="ga-camp-sub"></p>
+        <div class="table-scroll" id="ga-camp-table"></div>
+      </section>
+      <section class="card">
+        <h2>Tổng hợp theo tháng</h2>
+        <p class="sub">Các tháng nằm trong khoảng ngày đang chọn, theo cùng bộ lọc.</p>
+        <div class="table-scroll" id="ga-months"></div>
       </section>
     </div>
 
-    <section class="card" style="margin-top:16px">
-      <h2>Hiệu quả theo chiến dịch</h2>
-      <p class="sub" id="camp-sub"></p>
-      <div class="table-scroll" id="camp-table"></div>
-    </section>
-
-    <section class="card">
-      <h2>Tổng hợp theo tháng</h2>
-      <p class="sub">Các tháng nằm trong khoảng ngày đang chọn, theo cùng bộ lọc.</p>
-      <div class="table-scroll" id="month-table"></div>
-    </section>
+    <!-- Facebook Ads -->
+    <div id="view-fb" class="hidden">
+      <div class="kpis" id="fb-kpis-1"></div>
+      <div class="kpis" id="fb-kpis-2"></div>
+      <p class="kpi-note">Lượt nhấp liên kết, xem trang đích, tin nhắn, lead và purchase là số Meta ghi nhận theo cài đặt phân bổ của từng nhóm quảng cáo. Tỷ lệ xem video tính trên lượt hiển thị. Tiếp cận không cộng dồn qua các ngày nên không hiển thị tổng.</p>
+      <section class="card">
+        <h2>Nhận xét Facebook Ads</h2>
+        <p class="sub">Tự động theo số liệu Meta và ngưỡng trong GA_Cấu hình.</p>
+        <ul class="comments" id="fb-comments"></ul>
+      </section>
+      <section class="card">
+        <div class="card-head">
+          <div><h2 id="fb-trend-title">Xu hướng</h2><p class="sub" id="fb-trend-sub"></p></div>
+          <div class="seg" id="fb-metric" role="group" aria-label="Chỉ số"></div>
+        </div>
+        <div class="legend" id="fb-legend"></div>
+        <div class="chart-wrap" id="fb-chart"></div>
+        <details class="table-view"><summary>Xem bảng số liệu xu hướng</summary><div class="table-scroll" id="fb-trend-table"></div></details>
+      </section>
+      <div class="grid2">
+        <section class="card">
+          <h2>Phân bổ chi phí theo chiến dịch</h2>
+          <p class="sub">Bấm vào một chiến dịch để lọc cả trang.</p>
+          <div class="bars" id="fb-alloc-camp"></div>
+        </section>
+        <section class="card">
+          <h2>Phân bổ theo mục tiêu Meta</h2>
+          <p class="sub">Bấm vào một mục tiêu để lọc.</p>
+          <div class="bars" id="fb-alloc-obj"></div>
+        </section>
+      </div>
+      <section class="card">
+        <h2>Hiệu quả theo chiến dịch</h2>
+        <p class="sub" id="fb-camp-sub"></p>
+        <div class="table-scroll" id="fb-camp-table"></div>
+      </section>
+      <section class="card">
+        <h2>Tổng hợp theo tháng</h2>
+        <p class="sub">Các tháng nằm trong khoảng ngày đang chọn, theo cùng bộ lọc.</p>
+        <div class="table-scroll" id="fb-months"></div>
+      </section>
+    </div>
 
     <section class="card">
       <h2>Cách đọc số liệu</h2>
       <ul class="defs">
-        <li>Chuyển đổi (Conversions) là số Google Ads ghi nhận theo conversion action đã cài, không phải số đơn hàng.</li>
-        <li>Giá trị chuyển đổi là giá trị gán trong Google Ads, không phải doanh thu thực thu.</li>
-        <li>Lượt nhấp Google không tương đương Link clicks hay Clicks (all) của Facebook; chỉ số video Google không tương đương ThruPlay.</li>
-        <li>Lead và Purchase chỉ được tính khi conversion action đã được xác nhận loại trong GA_Ánh xạ chuyển đổi. Chi phí không bị cộng lặp khi ghép bảng chuyển đổi theo action.</li>
-        <li>Đánh giá chiến dịch so với trung vị các chiến dịch cùng mục tiêu, chỉ áp dụng khi đạt lượng dữ liệu tối thiểu; ngưỡng chỉnh trong GA_Cấu hình.</li>
-        <li>Số liệu đồng bộ theo lịch mỗi ngày một lần, không theo thời gian thực. Script lấy lại 30 ngày gần nhất nên số của các ngày gần đây có thể thay đổi nhẹ.</li>
+        <li>Chuyển đổi Google (Conversions) là số Google Ads ghi nhận theo conversion action đã cài, không phải số đơn hàng. Giá trị chuyển đổi là giá trị gán trong nền tảng, không phải doanh thu thực thu.</li>
+        <li>Lượt nhấp Google không tương đương Lượt nhấp liên kết hay Lượt nhấp (tất cả) của Facebook; chỉ số video Google không tương đương ThruPlay. Vì vậy các chỉ số này chỉ đặt cạnh nhau, không cộng chung.</li>
+        <li>Lead và Purchase của Google chỉ được tính khi conversion action đã được xác nhận loại trong GA_Ánh xạ chuyển đổi. Chi phí không bị cộng lặp khi ghép bảng chuyển đổi theo action.</li>
+        <li>Facebook: chiến dịch được đánh giá theo mục tiêu Meta (Nhận diện theo CPM, Lưu lượng truy cập theo CPC và CTR liên kết, Tương tác theo chi phí/tin nhắn hoặc chi phí/ThruPlay, Khách hàng tiềm năng theo CPL, Doanh số theo chi phí/purchase và ROAS).</li>
+        <li>Đánh giá chiến dịch so với trung vị các chiến dịch cùng mục tiêu trên cùng nền tảng, chỉ áp dụng khi đạt lượng dữ liệu tối thiểu; ngưỡng chỉnh trong GA_Cấu hình.</li>
+        <li>Số liệu đồng bộ theo lịch mỗi ngày một lần, không theo thời gian thực. Mỗi lần chạy lấy lại 30 ngày gần nhất nên số của các ngày gần đây có thể thay đổi nhẹ.</li>
       </ul>
     </section>
   </main>
@@ -285,10 +370,14 @@ const CONFIG = {
 };
 const SHEET_ID = new URLSearchParams(location.search).get('sheet') || CONFIG.SPREADSHEET_ID;
 const SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly';
-const SHEETS = { data: 'GA_Dữ liệu ngày', conv: 'GA_Chuyển đổi theo action', cmap: 'GA_Ánh xạ chuyển đổi', cfg: 'GA_Cấu hình', log: 'GA_Nhật ký' };
-const RANGES = [
+const SHEETS = {
+  data: 'GA_Dữ liệu ngày', conv: 'GA_Chuyển đổi theo action', cmap: 'GA_Ánh xạ chuyển đổi', cfg: 'GA_Cấu hình', log: 'GA_Nhật ký',
+  fbData: 'FB_Dữ liệu ngày', fbMap: 'FB_Ánh xạ chiến dịch', fbLog: 'FB_Nhật ký',
+};
+const GA_RANGES = [
   `'${SHEETS.data}'!A1:T`, `'${SHEETS.conv}'!A1:O`, `'${SHEETS.cmap}'!A1:E`, `'${SHEETS.cfg}'!A1:B30`, `'${SHEETS.log}'!A1:K60`,
 ];
+const FB_RANGES = [`'${SHEETS.fbData}'!A1:X`, `'${SHEETS.fbMap}'!A1:J`, `'${SHEETS.fbLog}'!A1:J60`];
 const UNCLASSIFIED = 'Chưa phân loại';
 
 // ===== Tiện ích =====
@@ -346,7 +435,7 @@ const fmt = {
     if (CUR === 'NHIỀU') return F0.format(v);
     return F2.format(v) + ' ' + CUR;
   },
-  compact: (v, money) => (isNum(v) ? FC.format(v) + (money && CUR === 'VND' ? ' ₫' : '') : ''),
+  compact: (v) => (isNum(v) ? FC.format(v) : ''),
 };
 const num = (v) => (isNum(v) ? v : v === '' || v == null ? 0 : Number(String(v).replace(',', '.')) || 0);
 const txt = (v) => (v == null ? '' : String(v).trim());
@@ -362,13 +451,21 @@ function median(list) {
   return a.length % 2 ? a[h] : (a[h - 1] + a[h]) / 2;
 }
 const div = (a, b) => (isNum(a) && isNum(b) && b > 0 ? a / b : null);
+const sumBy = (list, k) => list.reduce((t, r) => t + (r[k] || 0), 0);
 
 // ===== Trạng thái =====
-let DB = null;
+let GA = null;   // dữ liệu Google Ads
+let FBD = null;  // dữ liệu Facebook Ads (null khi Sheet chưa có tab FB_)
+let FB_NOTE = '';
 let CUR = 'VND';
 let token = null;
 let tokenClient = null;
-const state = { preset: '30', from: null, to: null, acc: '', camp: '', type: '', prod: '', metric: 'cost', sort: { key: 'cost', dir: -1 } };
+const DEFAULT_FILTERS = { preset: '30', from: null, to: null, acc: '', camp: '', type: '', prod: '', fbCamp: '', fbObj: '' };
+const state = {
+  view: 'all', ...DEFAULT_FILTERS,
+  metric: { all: 'cost', ga: 'cost', fb: 'cost' },
+  sort: { ga: { key: 'cost', dir: -1 }, fb: { key: 'cost', dir: -1 } },
+};
 
 // ===== Đọc dữ liệu từ Google Sheets =====
 function table(values, sheet, cols) {
@@ -376,13 +473,21 @@ function table(values, sheet, cols) {
   const idx = {};
   for (const [k, name] of Object.entries(cols)) {
     const i = head.indexOf(name);
-    if (i < 0) throw new Error(`Sheet "${sheet}" không có cột "${name}". Có thể script Google Ads đã đổi cấu trúc.`);
+    if (i < 0) throw new Error(`Sheet "${sheet}" không có cột "${name}". Có thể script đã đổi cấu trúc.`);
     idx[k] = i;
   }
   return values.slice(1).map((r) => { const o = {}; for (const k in idx) o[k] = r[idx[k]]; return o; });
 }
+function lastSuccess(log) {
+  const ok = log.filter((l) => txt(l.status) === 'Thành công' && isNum(l.end)).map((l) => l.end);
+  const latest = log.filter((l) => isNum(l.start)).sort((a, b) => b.start - a.start)[0];
+  return {
+    lastSync: ok.length ? Math.max(...ok) : null,
+    lastRun: latest ? { status: txt(latest.status), note: txt(latest.note), start: latest.start } : null,
+  };
+}
 
-function parseBatch(batch) {
+function parseGA(batch) {
   const vr = (batch.valueRanges || []).map((x) => x.values || []);
   const [dataV, convV, cmapV, cfgV, logV] = vr;
   const rows = table(dataV, SHEETS.data, {
@@ -414,25 +519,64 @@ function parseBatch(batch) {
     thr: c('Ngưỡng chênh lệch so với trung vị', 0.3), an: c('Ngưỡng chuyển đổi / lượt nhấp bất thường', 0.5),
     chg: c('Ngưỡng biến động so với kỳ trước', 0.2),
   };
-
   const log = logV.length ? table(logV, SHEETS.log, { start: 'Bắt đầu', end: 'Kết thúc', status: 'Trạng thái', note: 'Ghi chú' }) : [];
-  const ok = log.filter((l) => txt(l.status) === 'Thành công' && isNum(l.end)).map((l) => l.end);
-  const latest = log.filter((l) => isNum(l.start)).sort((a, b) => b.start - a.start)[0];
-
   const days = rows.map((r) => r.d);
   return {
-    rows, conv, cfg,
+    rows, conv, cfg, ...lastSuccess(log),
     hasLead: kinds.includes('Lead'), hasPurchase: kinds.includes('Purchase'),
-    lastSync: ok.length ? Math.max(...ok) : null,
-    lastRun: latest ? { status: txt(latest.status), note: txt(latest.note), start: latest.start } : null,
     minDay: days.length ? days[0] : null, maxDay: days.length ? days[days.length - 1] : null,
-    loadedAt: new Date(),
   };
 }
 
-// ===== Tính toán =====
+// Nhóm mục tiêu Meta (cả tên mục tiêu cũ lẫn mới).
+const FB_GROUP = {
+  OUTCOME_AWARENESS: 'aw', BRAND_AWARENESS: 'aw', REACH: 'aw',
+  OUTCOME_TRAFFIC: 'tr', LINK_CLICKS: 'tr',
+  OUTCOME_ENGAGEMENT: 'en', POST_ENGAGEMENT: 'en', PAGE_LIKES: 'en', VIDEO_VIEWS: 'en', MESSAGES: 'en', EVENT_RESPONSES: 'en',
+  OUTCOME_LEADS: 'ld', LEAD_GENERATION: 'ld',
+  OUTCOME_SALES: 'sa', CONVERSIONS: 'sa', PRODUCT_CATALOG_SALES: 'sa',
+};
+const FB_GROUP_LABEL = { aw: 'Nhận diện', tr: 'Lưu lượng truy cập', en: 'Tương tác', ld: 'Khách hàng tiềm năng', sa: 'Doanh số', ot: 'Khác' };
+const fbGroup = (objective) => FB_GROUP[objective] || 'ot';
+
+function parseFB(batch) {
+  const vr = (batch.valueRanges || []).map((x) => x.values || []);
+  const [dataV, mapV, logV] = vr;
+  const prodByKey = {};
+  if (mapV.length) {
+    table(mapV, SHEETS.fbMap, { key: 'Khoá chiến dịch', prod: 'Nhóm sản phẩm' }).forEach((m) => { if (txt(m.prod)) prodByKey[txt(m.key)] = txt(m.prod); });
+  }
+  const rows = table(dataV, SHEETS.fbData, {
+    date: 'Ngày', acc: 'ID tài khoản', accName: 'Tên tài khoản', cur: 'Tiền tệ', campId: 'ID chiến dịch', name: 'Tên chiến dịch',
+    objective: 'Mục tiêu Meta', cost: 'Chi phí', impr: 'Lượt hiển thị', clkAll: 'Lượt nhấp (tất cả)', link: 'Lượt nhấp liên kết',
+    lpv: 'Xem trang đích', msg: 'Tin nhắn bắt đầu', lead: 'Lead', purch: 'Purchase', pval: 'Giá trị purchase',
+    v3: 'Video 3 giây', v25: 'Video 25%', v50: 'Video 50%', thru: 'ThruPlay', eng: 'Tương tác bài viết', key: 'Khoá chiến dịch',
+  }).map((r) => {
+    const objective = txt(r.objective);
+    return {
+      d: serialDay(r.date), acc: txt(r.acc), accName: txt(r.accName), cur: txt(r.cur) || 'VND',
+      camp: `${txt(r.name)} · ${txt(r.campId)}`, objective, grp: fbGroup(objective),
+      cost: num(r.cost), impr: num(r.impr), clkAll: num(r.clkAll), link: num(r.link), lpv: num(r.lpv), msg: num(r.msg),
+      lead: num(r.lead), purch: num(r.purch), pval: num(r.pval), v3: num(r.v3), v25: num(r.v25), v50: num(r.v50),
+      thru: num(r.thru), eng: num(r.eng), prod: prodByKey[txt(r.key)] || UNCLASSIFIED,
+    };
+  }).filter((r) => r.d != null && r.camp !== ' · ');
+  rows.sort((a, b) => a.d - b.d);
+  const log = logV.length ? table(logV, SHEETS.fbLog, { start: 'Bắt đầu', end: 'Kết thúc', status: 'Trạng thái', note: 'Ghi chú' }) : [];
+  const days = rows.map((r) => r.d);
+  return { rows, ...lastSuccess(log), minDay: days.length ? days[0] : null, maxDay: days.length ? days[days.length - 1] : null };
+}
+
+// ===== Kỳ và bộ lọc =====
+function dataBounds() {
+  const ga = GA && GA.maxDay != null ? GA : null, fb = FBD && FBD.maxDay != null ? FBD : null;
+  if (state.view === 'ga' || !fb) return { min: ga.minDay, max: ga.maxDay };
+  if (state.view === 'fb' || !ga) return { min: fb.minDay, max: fb.maxDay };
+  // Tổng thể: mặc định dừng ở ngày cả hai nền tảng đều đã có số, để không so lệch ngày.
+  return { min: Math.min(ga.minDay, fb.minDay), max: Math.min(ga.maxDay, fb.maxDay) };
+}
 function period() {
-  const max = DB.maxDay, min = DB.minDay;
+  const { min, max } = dataBounds();
   let from, to;
   switch (state.preset) {
     case '7': case '30': case '90': to = max; from = max - (+state.preset - 1); break;
@@ -445,20 +589,25 @@ function period() {
   }
   if (from > to) [from, to] = [to, from];
   const n = to - from + 1;
-  return { from, to, n, pFrom: from - n, pTo: from - 1 };
+  return { from, to, n, pFrom: from - n, pTo: from - 1, max };
 }
-
-const passDims = (r) => (!state.acc || r.acc === state.acc) && (!state.camp || r.camp === state.camp) &&
-  (!state.type || r.type === state.type) && (!state.prod || r.prod === state.prod);
 const inRange = (r, a, b) => r.d >= a && r.d <= b;
+const gaPass = (r) => (!state.acc || r.acc === state.acc) && (!state.camp || r.camp === state.camp) &&
+  (!state.type || r.type === state.type) && (!state.prod || r.prod === state.prod);
+const fbPass = (r) => (!state.fbCamp || r.camp === state.fbCamp) && (!state.fbObj || r.grp === state.fbObj) && (!state.prod || r.prod === state.prod);
+const prodPass = (r) => !state.prod || r.prod === state.prod;
 
 function currencyOf(P) {
-  const set = new Set(DB.rows.filter((r) => inRange(r, P.from, P.to) && (!state.acc || r.acc === state.acc)).map((r) => r.cur));
+  const set = new Set();
+  const add = (rows, pass) => rows.forEach((r) => { if (inRange(r, P.from, P.to) && pass(r)) set.add(r.cur); });
+  if (GA && state.view !== 'fb') add(GA.rows, state.view === 'ga' ? (r) => !state.acc || r.acc === state.acc : () => true);
+  if (FBD && state.view !== 'ga') add(FBD.rows, () => true);
   if (set.size > 1) return 'NHIỀU';
   if (set.size === 1) return [...set][0];
-  return DB.rows.length ? DB.rows[0].cur : 'VND';
+  return (GA && GA.rows[0] && GA.rows[0].cur) || 'VND';
 }
 
+// ===== Google Ads: tính toán =====
 function agg(list) {
   const a = { n: 0, cost: 0, impr: 0, clk: 0, conv: 0, val: 0 };
   for (const r of list) { a.n++; a.cost += r.cost; a.impr += r.impr; a.clk += r.clk; a.conv += r.conv; a.val += r.val; }
@@ -466,35 +615,46 @@ function agg(list) {
 }
 function kindSum(a, b, kind, camp) {
   let s = 0;
-  for (const r of DB.conv) if (r.kind === kind && inRange(r, a, b) && passDims(r) && (!camp || r.camp === camp)) s += r.conv;
+  for (const r of GA.conv) if (r.kind === kind && inRange(r, a, b) && gaPass(r) && (!camp || r.camp === camp)) s += r.conv;
   return s;
 }
-function kpis(a, b) {
-  const s = agg(DB.rows.filter((r) => inRange(r, a, b) && passDims(r)));
+function gaKpis(a, b, pass = gaPass) {
+  const s = agg(GA.rows.filter((r) => inRange(r, a, b) && pass(r)));
   if (!s.n) return { n: 0 };
-  const lead = DB.hasLead ? kindSum(a, b, 'Lead') : null;
-  const purch = DB.hasPurchase ? kindSum(a, b, 'Purchase') : null;
+  const lead = GA.hasLead ? kindSum(a, b, 'Lead') : null;
+  const purch = GA.hasPurchase ? kindSum(a, b, 'Purchase') : null;
   return {
     ...s, ctr: div(s.clk, s.impr), cpc: div(s.cost, s.clk), cpm: s.impr > 0 ? s.cost / s.impr * 1000 : null,
     cpa: div(s.cost, s.conv), roas: s.cost > 0 && s.val > 0 ? s.val / s.cost : null, cvr: div(s.conv, s.clk),
     lead, cpl: div(s.cost, lead), purch, cpp: div(s.cost, purch),
   };
 }
-
-function campaigns(P) {
+const LV = { warn: 'Cảnh báo', check: 'Cần kiểm tra', good: 'Tốt', ok: 'Bình thường', low: 'Chưa đủ dữ liệu', noObj: 'Chưa phân loại mục tiêu' };
+function levelTools(list, groupKey, cfg) {
+  const { thr } = cfg;
+  const med = (k, g) => median(list.filter((c) => c[groupKey] === g && c.ok).map((c) => c[k]));
+  const lvl = (v, m, dir) => {
+    if (!isNum(v) || !isNum(m)) return LV.ok;
+    if (dir < 0) return v > m * (1 + thr) ? LV.warn : v < m * (1 - thr) ? LV.good : LV.ok;
+    return v < m * (1 - thr) ? LV.warn : v > m * (1 + thr) ? LV.good : LV.ok;
+  };
+  const worst = (a, b) => (a === LV.warn || b === LV.warn ? LV.warn : a === LV.good || b === LV.good ? LV.good : LV.ok);
+  return { med, lvl, worst };
+}
+function gaCampaigns(P) {
   const map = new Map();
-  for (const r of DB.rows) {
-    if (!inRange(r, P.from, P.to) || !passDims(r)) continue;
+  for (const r of GA.rows) {
+    if (!inRange(r, P.from, P.to) || !gaPass(r)) continue;
     let c = map.get(r.camp);
     if (!c) map.set(r.camp, c = { name: r.camp, rows: [] });
     c.rows.push(r);
     c.type = r.type; c.prod = r.prod; c.obj = r.obj; c.status = r.status; // dòng mới nhất thắng
   }
-  const { minI, minC, thr, an } = DB.cfg;
+  const { minI, minC, an } = GA.cfg;
   const list = [...map.values()].map((c) => {
     const s = agg(c.rows);
-    const lead = DB.hasLead ? kindSum(P.from, P.to, 'Lead', c.name) : null;
-    const purch = DB.hasPurchase ? kindSum(P.from, P.to, 'Purchase', c.name) : null;
+    const lead = GA.hasLead ? kindSum(P.from, P.to, 'Lead', c.name) : null;
+    const purch = GA.hasPurchase ? kindSum(P.from, P.to, 'Purchase', c.name) : null;
     return {
       name: c.name, type: c.type, prod: c.prod, obj: c.obj, status: c.status, ...s,
       ctr: div(s.clk, s.impr), cpc: div(s.cost, s.clk), cpm: s.impr > 0 ? s.cost / s.impr * 1000 : null,
@@ -504,13 +664,7 @@ function campaigns(P) {
     };
   });
   const total = list.reduce((t, c) => t + c.cost, 0);
-  const med = (k, o) => median(list.filter((c) => c.obj === o && c.ok).map((c) => c[k]));
-  const lvl = (v, m, dir) => {
-    if (!isNum(v) || !isNum(m)) return 'Bình thường';
-    if (dir < 0) return v > m * (1 + thr) ? 'Cảnh báo' : v < m * (1 - thr) ? 'Tốt' : 'Bình thường';
-    return v < m * (1 - thr) ? 'Cảnh báo' : v > m * (1 + thr) ? 'Tốt' : 'Bình thường';
-  };
-  const worst = (a, b) => (a === 'Cảnh báo' || b === 'Cảnh báo' ? 'Cảnh báo' : a === 'Tốt' || b === 'Tốt' ? 'Tốt' : 'Bình thường');
+  const { med, lvl, worst } = levelTools(list, 'obj', GA.cfg);
   const m = (v) => fmt.money(v);
   for (const c of list) {
     c.share = total > 0 ? c.cost / total : 0;
@@ -523,19 +677,19 @@ function campaigns(P) {
       base = worst(lvl(c.cpc, med('cpc', o), -1), lvl(c.ctr, med('ctr', o), 1));
       body = `CPC ${m(c.cpc)} (trung vị ${m(med('cpc', o))}), CTR ${fmt.pct(c.ctr)} (trung vị ${fmt.pct(med('ctr', o))})`;
     } else if (o === 'Khách hàng tiềm năng') {
-      base = DB.hasLead ? lvl(c.cpl, med('cpl', o), -1) : 'Chưa có định nghĩa Lead';
-      body = DB.hasLead ? `Lead ${fmt.int(c.lead)}, CPL ${m(c.cpl)} (trung vị ${m(med('cpl', o))})` : 'Cần xác nhận conversion action Lead trong GA_Ánh xạ chuyển đổi';
+      base = GA.hasLead ? lvl(c.cpl, med('cpl', o), -1) : 'Chưa có định nghĩa Lead';
+      body = GA.hasLead ? `Lead ${fmt.int(c.lead)}, CPL ${m(c.cpl)} (trung vị ${m(med('cpl', o))})` : 'Cần xác nhận conversion action Lead trong GA_Ánh xạ chuyển đổi';
     } else if (o === 'Bán hàng') {
-      base = DB.hasPurchase ? worst(lvl(c.cpp, med('cpp', o), -1), isNum(c.roas) && c.roas < 1 ? 'Cảnh báo' : 'Bình thường') : 'Chưa có định nghĩa Purchase';
-      body = DB.hasPurchase
+      base = GA.hasPurchase ? worst(lvl(c.cpp, med('cpp', o), -1), isNum(c.roas) && c.roas < 1 ? LV.warn : LV.ok) : 'Chưa có định nghĩa Purchase';
+      body = GA.hasPurchase
         ? `Purchase ${fmt.int(c.purch)}, chi phí/purchase ${m(c.cpp)} (trung vị ${m(med('cpp', o))}), ROAS ${fmt.dec2(c.roas)}`
         : 'Cần xác nhận conversion action Purchase trong GA_Ánh xạ chuyển đổi';
     } else {
-      base = 'Chưa phân loại mục tiêu';
+      base = LV.noObj;
       body = 'Cần điền Mục tiêu trong GA_Ánh xạ chiến dịch';
     }
-    c.level = !c.ok ? 'Chưa đủ dữ liệu' : o === UNCLASSIFIED ? 'Chưa phân loại mục tiêu'
-      : c.cvr > an && (base === 'Tốt' || base === 'Bình thường') ? 'Cần kiểm tra' : base;
+    c.level = !c.ok ? LV.low : o === UNCLASSIFIED ? LV.noObj
+      : c.cvr > an && (base === LV.good || base === LV.ok) ? LV.check : base;
     const low = c.ok ? '' : `Dưới ngưỡng tối thiểu (${fmt.int(minI)} hiển thị, ${m(minC)}). `;
     const flag = c.cvr > an ? `. Chuyển đổi/lượt nhấp ${fmt.pct1(c.cvr)} vượt ngưỡng ${fmt.pct0(an)}: kiểm tra conversion action` : '';
     c.reason = low + body + flag;
@@ -543,64 +697,374 @@ function campaigns(P) {
   return { list: list.filter((c) => c.cost > 0), total };
 }
 
-function dayMap(a, b) {
-  const m = new Map();
-  for (const r of DB.rows) {
-    if (!inRange(r, a, b) || !passDims(r)) continue;
-    let x = m.get(r.d);
-    if (!x) m.set(r.d, x = { cost: 0, impr: 0, clk: 0, conv: 0, val: 0 });
-    x.cost += r.cost; x.impr += r.impr; x.clk += r.clk; x.conv += r.conv; x.val += r.val;
-  }
-  return m;
+// ===== Facebook Ads: tính toán =====
+const FB_SUM = ['cost', 'impr', 'clkAll', 'link', 'lpv', 'msg', 'lead', 'purch', 'pval', 'v3', 'v25', 'v50', 'thru', 'eng'];
+function fbAgg(list) {
+  const a = { n: 0 };
+  FB_SUM.forEach((k) => { a[k] = 0; });
+  for (const r of list) { a.n++; FB_SUM.forEach((k) => { a[k] += r[k]; }); }
+  return a;
 }
-function buckets(a, b, step) {
-  const m = dayMap(a, b), out = [];
-  for (let s = a; s <= b; s += step) {
-    const e = Math.min(s + step - 1, b), x = { s, e, cost: 0, impr: 0, clk: 0, conv: 0, val: 0, days: 0 };
-    for (let d = s; d <= e; d++) { const y = m.get(d); if (y) { x.days++; for (const k of ['cost', 'impr', 'clk', 'conv', 'val']) x[k] += y[k]; } }
-    out.push(x);
+function fbDerive(s) {
+  return {
+    ...s, cpm: s.impr > 0 ? s.cost / s.impr * 1000 : null, ctrLink: div(s.link, s.impr), cpcLink: div(s.cost, s.link),
+    cpLpv: div(s.cost, s.lpv), cpThru: div(s.cost, s.thru), r25: div(s.v25, s.impr), r50: div(s.v50, s.impr),
+    cpMsg: div(s.cost, s.msg), cpl: div(s.cost, s.lead), cpp: div(s.cost, s.purch), roas: s.cost > 0 && s.pval > 0 ? s.pval / s.cost : null,
+  };
+}
+function fbKpis(a, b, pass = fbPass) {
+  const s = fbAgg(FBD.rows.filter((r) => inRange(r, a, b) && pass(r)));
+  return s.n ? fbDerive(s) : { n: 0 };
+}
+// Kết quả chính theo mục tiêu Meta: [tên kết quả, số kết quả, chi phí trên kết quả, chiều tốt].
+function fbResult(c) {
+  switch (c.grp) {
+    case 'aw': return ['Hiển thị (CPM)', c.impr, c.cpm, -1];
+    case 'tr': return ['Lượt nhấp liên kết', c.link, c.cpcLink, -1];
+    case 'en': return c.msg > 0 ? ['Tin nhắn bắt đầu', c.msg, c.cpMsg, -1] : ['ThruPlay', c.thru, c.cpThru, -1];
+    case 'ld': return ['Lead', c.lead, c.cpl, -1];
+    case 'sa': return ['Purchase', c.purch, c.cpp, -1];
+    default: return ['Lượt nhấp liên kết', c.link, c.cpcLink, -1];
   }
+}
+function fbCampaigns(P) {
+  const map = new Map();
+  for (const r of FBD.rows) {
+    if (!inRange(r, P.from, P.to) || !fbPass(r)) continue;
+    let c = map.get(r.camp);
+    if (!c) map.set(r.camp, c = { name: r.camp, rows: [] });
+    c.rows.push(r);
+    c.objective = r.objective; c.grp = r.grp; c.prod = r.prod;
+  }
+  const cfg = GA ? GA.cfg : { minI: 1000, minC: 500000, thr: 0.3 };
+  const list = [...map.values()].map((c) => {
+    const s = fbDerive(fbAgg(c.rows));
+    const x = { name: c.name, objective: c.objective, grp: c.grp, prod: c.prod, ...s, ok: s.cost >= cfg.minC && s.impr >= cfg.minI };
+    const [rName, rCount, rCost] = fbResult(x);
+    return Object.assign(x, { rName, rCount, rCost });
+  });
+  const total = list.reduce((t, c) => t + c.cost, 0);
+  const { med, lvl, worst } = levelTools(list, 'grp', cfg);
+  const m = (v) => fmt.money(v);
+  for (const c of list) {
+    c.share = total > 0 ? c.cost / total : 0;
+    const g = c.grp;
+    let base, body;
+    if (g === 'tr') {
+      base = worst(lvl(c.cpcLink, med('cpcLink', g), -1), lvl(c.ctrLink, med('ctrLink', g), 1));
+      body = `CPC liên kết ${m(c.cpcLink)} (trung vị ${m(med('cpcLink', g))}), CTR liên kết ${fmt.pct(c.ctrLink)} (trung vị ${fmt.pct(med('ctrLink', g))})`;
+    } else if (g === 'sa') {
+      base = worst(lvl(c.cpp, med('cpp', g), -1), isNum(c.roas) && c.roas < 1 ? LV.warn : LV.ok);
+      body = `Purchase ${fmt.int(c.purch)}, chi phí/purchase ${m(c.cpp)} (trung vị ${m(med('cpp', g))}), ROAS ${fmt.dec2(c.roas)}`;
+    } else {
+      const medCost = median(list.filter((o) => o.grp === g && o.ok && o.rName === c.rName).map((o) => o.rCost));
+      base = lvl(c.rCost, medCost, -1);
+      body = g === 'aw' ? `CPM ${m(c.cpm)} (trung vị ${m(medCost)})` : `${c.rName} ${fmt.int(c.rCount)}, chi phí/kết quả ${m(c.rCost)} (trung vị ${m(medCost)})`;
+    }
+    c.level = c.ok ? base : LV.low;
+    c.reason = (c.ok ? '' : `Dưới ngưỡng tối thiểu (${fmt.int(cfg.minI)} hiển thị, ${m(cfg.minC)}). `) + body;
+  }
+  return { list: list.filter((c) => c.cost > 0), total };
+}
+
+// ===== Chuỗi thời gian =====
+function makeBuckets(a, b, step) {
+  const out = [];
+  for (let s = a; s <= b; s += step) out.push({ s, e: Math.min(s + step - 1, b) });
   return out;
 }
+// Cộng các trường `keys` của `rows` (đã lọc) vào từng khoảng ngày; `days` đếm số ngày có dữ liệu.
+function fillBuckets(bks, rows, keys) {
+  const byDay = new Map();
+  for (const r of rows) {
+    let x = byDay.get(r.d);
+    if (!x) byDay.set(r.d, x = {});
+    keys.forEach((k) => { x[k] = (x[k] || 0) + r[k]; });
+  }
+  return bks.map((b) => {
+    const o = { s: b.s, e: b.e, days: 0 };
+    keys.forEach((k) => { o[k] = 0; });
+    for (let d = b.s; d <= b.e; d++) { const x = byDay.get(d); if (x) { o.days++; keys.forEach((k) => { o[k] += x[k]; }); } }
+    return o;
+  });
+}
+const stepOf = (P) => (P.n <= 62 ? 1 : 7);
+const rangeLabel = (b) => (b.s === b.e ? fmtDay(b.s) : `${fmtDM(b.s)} – ${fmtDay(b.e)}`);
 
-// ===== Hiển thị =====
-const METRICS = {
-  cost: { label: 'Chi phí', f: (a) => (a.days ? a.cost : null), money: true },
-  clk: { label: 'Lượt nhấp', f: (a) => (a.days ? a.clk : null) },
-  impr: { label: 'Lượt hiển thị', f: (a) => (a.days ? a.impr : null) },
-  conv: { label: 'Chuyển đổi', f: (a) => (a.days ? a.conv : null), dec: true },
-  cpc: { label: 'CPC', f: (a) => div(a.cost, a.clk), money: true },
-  ctr: { label: 'CTR', f: (a) => div(a.clk, a.impr), pct: true },
-  cpa: { label: 'CPA', f: (a) => div(a.cost, a.conv), money: true },
+function niceMax(v) {
+  if (!(v > 0)) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  for (const k of [1, 2, 2.5, 5, 10]) if (k * p >= v) return k * p;
+  return 10 * p;
+}
+// Biểu đồ đường một trục. series: [{ name, color, values, ranges? (nhãn khoảng ngày riêng của chuỗi), area }]
+function lineChart(wrap, xs, series, format, label, pct) {
+  wrap.textContent = '';
+  const W = Math.max(280, wrap.clientWidth || 800), H = W < 500 ? 240 : 280;
+  const L = 64, R = 12, T = 12, B = 28, pw = W - L - R, ph = H - T - B;
+  const svg = svgEl('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, width: W, height: H, style: `height:${H}px`, tabindex: '0', role: 'img',
+    'aria-label': `Biểu đồ ${label}; dùng phím mũi tên trái/phải để xem từng điểm` });
+  const all = series.flatMap((s) => s.values.filter(isNum));
+  const maxV = niceMax(Math.max(0, ...all));
+  const n = xs.length;
+  const x = (i) => L + (n === 1 ? pw / 2 : (i * pw) / (n - 1));
+  const y = (v) => T + ph - (v / maxV) * ph;
+  for (let i = 0; i <= 4; i++) {
+    const v = (maxV * i) / 4, yy = y(v);
+    svg.append(svgEl('line', { class: i ? 'gridline' : 'baseline', x1: L, x2: W - R, y1: yy, y2: yy }));
+    const t = svgEl('text', { class: 'tick-y', x: L - 8, y: yy + 4, 'text-anchor': 'end' });
+    t.textContent = pct ? fmt.pct1(v) : fmt.compact(v);
+    svg.append(t);
+  }
+  const nLabels = Math.min(n, W < 500 ? 4 : 8);
+  for (let j = 0; j < nLabels; j++) {
+    const i = nLabels === 1 ? 0 : Math.round((j * (n - 1)) / (nLabels - 1));
+    const t = svgEl('text', { x: x(i), y: H - 8, 'text-anchor': j === 0 ? 'start' : j === nLabels - 1 ? 'end' : 'middle' });
+    t.textContent = fmtDM(xs[i].s);
+    svg.append(t);
+  }
+  const path = (vals) => {
+    let d = '', open = false;
+    vals.forEach((v, i) => { if (isNum(v)) { d += (open ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); open = true; } else open = false; });
+    return d;
+  };
+  [...series].reverse().forEach((s) => {
+    const d = path(s.values);
+    if (s.area && d && s.values.every(isNum)) {
+      svg.append(svgEl('path', { d: d + `L${x(n - 1).toFixed(1)},${y(0)}L${x(0).toFixed(1)},${y(0)}Z`, fill: s.color, 'fill-opacity': '0.1' }));
+    }
+    svg.append(svgEl('path', { d, fill: 'none', stroke: s.color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+  });
+  // Lớp di chuột: đường dóng dọc bắt điểm gần nhất, chú thích liệt kê mọi đường.
+  const hair = svgEl('line', { x1: 0, x2: 0, y1: T, y2: T + ph, stroke: 'var(--axis)', 'stroke-width': 1, visibility: 'hidden' });
+  const dots = series.map((s) => svgEl('circle', { r: 4, fill: s.color, stroke: '#fff', 'stroke-width': 2, visibility: 'hidden' }));
+  const hit = svgEl('rect', { x: L, y: T, width: pw, height: ph, fill: 'transparent' });
+  svg.append(hair, ...dots, hit);
+  wrap.append(svg);
+  const tip = el('div', { class: 'tip hidden' });
+  wrap.append(tip);
+  let idx = -1;
+  const show = (i) => {
+    idx = Math.max(0, Math.min(n - 1, i));
+    const xx = x(idx);
+    hair.setAttribute('x1', xx); hair.setAttribute('x2', xx); hair.setAttribute('visibility', 'visible');
+    series.forEach((s, k) => {
+      const v = s.values[idx];
+      if (isNum(v)) { dots[k].setAttribute('cx', xx); dots[k].setAttribute('cy', y(v)); dots[k].setAttribute('visibility', 'visible'); } else dots[k].setAttribute('visibility', 'hidden');
+    });
+    tip.textContent = '';
+    tip.append(el('div', { class: 't', text: series.some((s) => s.ranges) ? label : `${label} · ${rangeLabel(xs[idx])}` }),
+      series.map((s) => el('div', { class: 'r' }, el('i', { class: 'key', style: `background:${s.color}` }), el('strong', { text: format(s.values[idx]) }),
+        el('em', { text: s.ranges ? (s.ranges[idx] ? rangeLabel(s.ranges[idx]) : '') : s.name }))));
+    tip.classList.remove('hidden');
+    const scale = wrap.clientWidth / W;
+    const px = xx * scale, tw = tip.offsetWidth;
+    tip.style.left = (px + 14 + tw > wrap.clientWidth ? px - 14 - tw : px + 14) + 'px';
+    tip.style.top = '8px';
+  };
+  const hide = () => { idx = -1; tip.classList.add('hidden'); [hair, ...dots].forEach((nd) => nd.setAttribute('visibility', 'hidden')); };
+  hit.addEventListener('pointermove', (e) => {
+    const r = svg.getBoundingClientRect();
+    const px = ((e.clientX - r.left) / r.width) * W;
+    show(n === 1 ? 0 : Math.round(((px - L) / pw) * (n - 1)));
+  });
+  hit.addEventListener('pointerleave', hide);
+  svg.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); show(idx < 0 ? 0 : idx + (e.key === 'ArrowRight' ? 1 : -1)); }
+    if (e.key === 'Escape') hide();
+  });
+  svg.addEventListener('blur', hide);
+}
+function legend(box, series) {
+  box.textContent = '';
+  box.append(...series.map((s) => el('span', {}, el('i', { class: 'key', style: `background:${s.color}` }), s.legend || s.name)));
+}
+function trendTable(box, xs, series, format, step) {
+  const headCells = series.flatMap((s) => (s.ranges
+    ? [el('th', { class: 'l', text: 'Khoảng ' + s.name.toLowerCase() }), el('th', { text: s.name })]
+    : [el('th', { text: s.name })]));
+  const bodyRows = xs.map((b, i) => el('tr', {}, el('td', { text: rangeLabel(b) }), series.flatMap((s) => (s.ranges
+    ? [el('td', { class: 'l', text: s.ranges[i] ? rangeLabel(s.ranges[i]) : '' }), el('td', { text: format(s.values[i]) })]
+    : [el('td', { text: format(s.values[i]) })]))));
+  box.textContent = '';
+  box.append(el('table', {},
+    el('thead', {}, el('tr', {}, el('th', { text: step === 1 ? 'Ngày' : 'Tuần' }), headCells)),
+    el('tbody', {}, bodyRows)));
+}
+function metricSeg(box, defs, view, onChange) {
+  box.textContent = '';
+  for (const [k, def] of Object.entries(defs)) {
+    box.append(el('button', { class: 'chip', type: 'button', 'aria-pressed': String(state.metric[view] === k), text: def.label,
+      onclick: () => { state.metric[view] = k; onChange(); } }));
+  }
+}
+// Biểu đồ kỳ này so với kỳ trước cho một nền tảng.
+function periodTrend(view, P, rows, pass, keys, defs) {
+  const step = stepOf(P);
+  const M = defs[state.metric[view]] || defs.cost;
+  const cur = fillBuckets(makeBuckets(P.from, P.to, step), rows.filter((r) => inRange(r, P.from, P.to) && pass(r)), keys);
+  const prev = fillBuckets(makeBuckets(P.pFrom, P.pTo, step), rows.filter((r) => inRange(r, P.pFrom, P.pTo) && pass(r)), keys);
+  const series = [
+    { name: 'Kỳ này', color: 'var(--series-1)', values: cur.map(M.f), ranges: cur, area: true, legend: `Kỳ này (${fmtDM(P.from)} – ${fmtDay(P.to)})` },
+    { name: 'Kỳ trước', color: 'var(--series-2)', values: prev.map(M.f), ranges: prev, legend: `Kỳ trước (${fmtDM(P.pFrom)} – ${fmtDay(P.pTo)})` },
+  ];
+  const format = (v) => M.fmt(v);
+  metricSeg($(`${view}-metric`), defs, view, () => periodTrend(view, period(), rows, pass, keys, defs));
+  $(`${view}-trend-title`).textContent = 'Xu hướng ' + M.title;
+  $(`${view}-trend-sub`).textContent = (step === 1 ? 'Theo ngày' : 'Theo tuần (kỳ trên 62 ngày)') + '. Đường kỳ trước được dóng theo thứ tự ngày để so cùng vị trí.';
+  legend($(`${view}-legend`), series);
+  lineChart($(`${view}-chart`), cur, series, format, M.label, M.pct);
+  trendTable($(`${view}-trend-table`), cur, series, format, step);
+}
+const valueOrNull = (k) => (a) => (a.days ? a[k] : null);
+const GA_METRICS = {
+  cost: { label: 'Chi phí', title: 'chi phí', f: valueOrNull('cost'), fmt: (v) => fmt.money(v) },
+  clk: { label: 'Lượt nhấp', title: 'lượt nhấp', f: valueOrNull('clk'), fmt: fmt.int },
+  impr: { label: 'Lượt hiển thị', title: 'lượt hiển thị', f: valueOrNull('impr'), fmt: fmt.int },
+  conv: { label: 'Chuyển đổi', title: 'chuyển đổi', f: valueOrNull('conv'), fmt: fmt.dec1 },
+  cpc: { label: 'CPC', title: 'CPC', f: (a) => div(a.cost, a.clk), fmt: (v) => fmt.money(v) },
+  ctr: { label: 'CTR', title: 'CTR', f: (a) => div(a.clk, a.impr), fmt: fmt.pct, pct: true },
+  cpa: { label: 'CPA', title: 'CPA', f: (a) => div(a.cost, a.conv), fmt: (v) => fmt.money(v) },
 };
-const fmtMetric = (k, v) => (METRICS[k].money ? fmt.money(v) : METRICS[k].pct ? fmt.pct(v) : METRICS[k].dec ? fmt.dec1(v) : fmt.int(v));
+const FB_METRICS = {
+  cost: { label: 'Chi phí', title: 'chi phí', f: valueOrNull('cost'), fmt: (v) => fmt.money(v) },
+  impr: { label: 'Lượt hiển thị', title: 'lượt hiển thị', f: valueOrNull('impr'), fmt: fmt.int },
+  cpm: { label: 'CPM', title: 'CPM', f: (a) => (a.impr > 0 ? a.cost / a.impr * 1000 : null), fmt: (v) => fmt.money(v) },
+  link: { label: 'Nhấp liên kết', title: 'lượt nhấp liên kết', f: valueOrNull('link'), fmt: fmt.int },
+  cpcLink: { label: 'CPC liên kết', title: 'CPC liên kết', f: (a) => div(a.cost, a.link), fmt: (v) => fmt.money(v) },
+  thru: { label: 'ThruPlay', title: 'ThruPlay', f: valueOrNull('thru'), fmt: fmt.int },
+  lpv: { label: 'Xem trang đích', title: 'lượt xem trang đích', f: valueOrNull('lpv'), fmt: fmt.int },
+};
 
+// ===== Hiển thị chung =====
+const LEVELS = { 'Cảnh báo': ['critical', '!'], 'Cần kiểm tra': ['serious', '?'], 'Tốt': ['good', '✓'], 'Bình thường': ['neutral', '•'] };
+const badge = (lv) => { const [cls, icon] = LEVELS[lv] || ['na', '–']; return el('span', { class: 'badge ' + cls }, el('i', { 'aria-hidden': 'true', text: icon }), lv); };
+
+function kpiTiles(boxId, defs, cur, prev) {
+  const box = $(boxId);
+  box.textContent = '';
+  for (const [label, k, f, dir, hint] of defs) {
+    const v = cur.n ? cur[k] : null, pv = prev.n ? prev[k] : null;
+    const has = isNum(v);
+    const ch = has && isNum(pv) && pv !== 0 ? v / pv - 1 : null;
+    const cls = !isNum(ch) || !dir || ch === 0 ? '' : (ch > 0) === (dir > 0) ? 'good' : 'bad';
+    box.append(el('div', { class: 'tile' + (has ? '' : ' none'), title: hint || null },
+      el('div', { class: 'lbl', text: label }),
+      el('div', { class: 'val', text: has ? fmt[f](v) : '–' }),
+      el('div', { class: 'prev', text: has ? 'Kỳ trước: ' + (isNum(pv) ? fmt[f](pv) : '–') : 'Chưa có dữ liệu' }),
+      el('div', { class: 'delta ' + cls, text: isNum(ch) ? (ch > 0 ? '▲ ' : ch < 0 ? '▼ ' : '') + fmt.signed(ch) : ' ' })));
+  }
+}
+function barList(box, items, activeKey, onPick, cls) {
+  box.textContent = '';
+  if (!items.length) { box.append(el('p', { class: 'muted', text: 'Chưa có dữ liệu.' })); return; }
+  const max = Math.max(...items.map((i) => i.share));
+  for (const it of items) {
+    const row = el('div', { class: 'bar-row' + (activeKey && it.key === activeKey ? ' active' : ''), role: 'button', tabindex: it.key ? '0' : null,
+      title: `${it.label}: ${fmt.money(it.cost)} (${fmt.pct1(it.share)})` },
+      el('span', { class: 'name', text: it.label }),
+      el('div', { class: 'bar-track' }, el('div', { class: 'bar' + (cls ? ' ' + cls : ''), style: `width:${max > 0 ? (it.share / max) * 100 : 0}%` })),
+      el('span', { class: 'v', text: `${fmt.pct1(it.share)} · ${fmt.money(it.cost)}` }));
+    if (it.key) {
+      const pick = () => onPick(it.key);
+      row.addEventListener('click', pick);
+      row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+    }
+    box.append(row);
+  }
+}
+function campAlloc(boxId, camps, active, onPick, cls) {
+  const list = [...camps.list].sort((a, b) => b.cost - a.cost);
+  const top = list.slice(0, 10).map((c) => ({ key: c.name, label: c.name, cost: c.cost, share: c.share }));
+  const rest = list.slice(10);
+  if (rest.length) top.push({ key: '', label: `${rest.length} chiến dịch khác`, cost: sumBy(rest, 'cost'), share: sumBy(rest, 'share') });
+  barList($(boxId), top, active, onPick, cls);
+}
+// Bảng có sắp xếp: cols = [khoá, tiêu đề, hàm hiển thị, lớp căn lề]; footCells = các ô dòng tổng.
+function sortableTable(box, view, list, cols, onRow, activeName, footCells) {
+  const { key, dir } = state.sort[view];
+  const rows = [...list].sort((a, b) => {
+    const x = a[key], y = b[key];
+    if (typeof x === 'string' || typeof y === 'string') return dir * String(x ?? '').localeCompare(String(y ?? ''), 'vi');
+    if (!isNum(x)) return 1;
+    if (!isNum(y)) return -1;
+    return dir * (x - y);
+  });
+  box.textContent = '';
+  if (!rows.length) { box.append(el('p', { class: 'muted', style: 'padding:12px', text: 'Không có dữ liệu trong kỳ và bộ lọc đang chọn.' })); return; }
+  const head = el('tr', {}, cols.map(([k, label, , cls]) => el('th', { class: cls === 'reason' ? 'l' : cls || null, 'aria-sort': k === key ? (dir > 0 ? 'ascending' : 'descending') : null },
+    el('button', { type: 'button', text: label + (k === key ? (dir > 0 ? ' ▲' : ' ▼') : ''),
+      onclick: () => { state.sort[view] = { key: k, dir: k === key ? -dir : cols.find((c) => c[0] === k)[3] ? 1 : -1 }; sortableTable(box, view, list, cols, onRow, activeName, footCells); } }))));
+  const body = rows.map((c) => {
+    const tr = el('tr', { class: 'click', title: activeName === c.name ? 'Bấm để bỏ lọc chiến dịch này' : 'Bấm để lọc theo chiến dịch này' },
+      cols.map(([k, , f, cls]) => el('td', { class: cls || null, title: k === 'name' ? c.name : null }, f(c))));
+    tr.addEventListener('click', () => onRow(c));
+    return tr;
+  });
+  box.append(el('table', {}, el('thead', {}, head), el('tbody', {}, body), footCells ? el('tfoot', {}, el('tr', {}, footCells)) : null));
+}
+function monthTable(box, rows, P, maxDay, heads, cells) {
+  const groups = new Map();
+  for (const r of rows) {
+    const k = monthKey(r.d);
+    let g = groups.get(k);
+    if (!g) groups.set(k, g = { k, rows: [], any: r.d });
+    g.rows.push(r);
+  }
+  box.textContent = '';
+  const list = [...groups.values()].sort((a, b) => b.k - a.k);
+  if (!list.length) { box.append(el('p', { class: 'muted', style: 'padding:12px', text: 'Chưa có dữ liệu.' })); return; }
+  box.append(el('table', {},
+    el('thead', {}, el('tr', {}, ['Tháng', ...heads].map((h) => el('th', { text: h })))),
+    el('tbody', {}, list.map((g) => {
+      const a = Math.max(P.from, monthStart(g.any)), b = Math.min(P.to, monthEnd(g.any), maxDay);
+      const partial = a > monthStart(g.any) || b < monthEnd(g.any);
+      const label = `${pad(g.k % 100)}/${Math.floor(g.k / 100)}` + (partial ? ` (${fmtDM(a)} – ${fmtDM(b)})` : '');
+      return el('tr', {}, el('td', { text: label }), cells(g.rows).map((v) => el('td', { text: v })));
+    }))));
+}
+const changeText = (cur, prev, P) => (!prev ? 'kỳ trước không có chi phí.'
+  : `${cur >= prev ? 'tăng' : 'giảm'} ${fmt.pct1(Math.abs(cur / prev - 1))} so với kỳ trước (${fmtDM(P.pFrom)} – ${fmtDay(P.pTo)}).`);
+function comments(boxId, lines) {
+  const ul = $(boxId);
+  ul.textContent = '';
+  lines.filter(Boolean).forEach((s) => ul.append(el('li', { text: s })));
+}
+
+// ===== Điều phối =====
 function render() {
-  // Chiến dịch đang lọc không thuộc tài khoản vừa chọn thì bỏ lọc chiến dịch.
-  if (state.camp && !DB.rows.some((r) => r.camp === state.camp && (!state.acc || r.acc === state.acc))) state.camp = '';
+  // Bộ lọc chiến dịch không còn hợp với tài khoản đang chọn thì bỏ.
+  if (GA && state.camp && !GA.rows.some((r) => r.camp === state.camp && (!state.acc || r.acc === state.acc))) state.camp = '';
+  if (state.view === 'fb' && !FBD) state.view = 'all';
   const P = period();
   CUR = currencyOf(P);
-  const cur = kpis(P.from, P.to), prev = kpis(P.pFrom, P.pTo);
-  const camps = campaigns(P);
+  renderTabs();
   renderFilters(P);
-  renderNotices(P, cur);
-  renderKpis(cur, prev);
-  renderComments(P, cur, prev, camps);
-  renderTrend(P);
-  renderAlloc(camps);
-  renderCampTable(camps);
-  renderMonths(P);
+  renderNotices(P);
+  for (const v of ['all', 'ga', 'fb']) $(`view-${v}`).classList.toggle('hidden', state.view !== v);
+  if (state.view === 'ga') renderGA(P);
+  else if (state.view === 'fb') renderFB(P);
+  else renderAll(P);
+}
+function setView(v) { state.view = v; render(); window.scrollTo({ top: 0 }); }
+
+function renderTabs() {
+  const box = $('tabs');
+  box.textContent = '';
+  for (const [k, label] of [['all', 'Tổng thể'], ['ga', 'Google Ads'], ['fb', 'Facebook Ads']]) {
+    box.append(el('button', { class: 'tab', role: 'tab', type: 'button', 'aria-selected': String(state.view === k), text: label + (k === 'fb' && !FBD ? ' (chưa có)' : ''),
+      disabled: k === 'fb' && !FBD ? true : null, onclick: () => setView(k) }));
+  }
 }
 
 function renderSync() {
   const t = $('sync-text');
   t.textContent = '';
-  t.append(
-    el('span', { text: 'Đồng bộ thành công gần nhất: ' + (DB.lastSync ? fmtStamp(DB.lastSync) : 'chưa có') }),
-    el('span', { text: 'Dữ liệu thực tế: ' + (DB.minDay != null ? fmtDay(DB.minDay) + ' – ' + fmtDay(DB.maxDay) : 'chưa có') }),
+  const part = (name, D) => (D ? `${name}: đồng bộ ${D.lastSync ? fmtStamp(D.lastSync) : 'chưa có'} · dữ liệu ${D.minDay != null ? fmtDay(D.minDay) + ' – ' + fmtDay(D.maxDay) : 'chưa có'}`
+    : `${name}: chưa có dữ liệu`);
+  t.append(el('span', { text: part('Google Ads', GA) }), el('span', { text: part('Facebook Ads', FBD) }),
     el('span', { text: 'Đồng bộ tự động mỗi ngày một lần, không theo thời gian thực' }),
-    el('span', { text: `Trang đọc Google Sheet lúc ${pad(DB.loadedAt.getHours())}:${pad(DB.loadedAt.getMinutes())}` }),
-  );
+    el('span', { text: `Trang đọc Google Sheet lúc ${pad(LOADED_AT.getHours())}:${pad(LOADED_AT.getMinutes())}` }));
   $('sync').classList.remove('hidden');
 }
 
@@ -611,252 +1075,208 @@ function fillSelect(sel, items, value, allLabel) {
   for (const [v, label] of items) sel.append(el('option', { value: v, text: label }));
   sel.value = items.some(([v]) => v === value) ? value : '';
 }
+const uniqSorted = (rows, key, filter) => [...new Set(rows.filter(filter || (() => true)).map((r) => r[key]))].filter(Boolean).sort((a, b) => a.localeCompare(b, 'vi'));
 function renderFilters(P) {
+  document.querySelectorAll('[data-view]').forEach((n) => n.classList.toggle('hidden', n.dataset.view !== state.view));
   const pre = $('presets');
   pre.textContent = '';
   for (const [k, label] of PRESETS) {
     pre.append(el('button', { class: 'chip', type: 'button', 'aria-pressed': String(state.preset === k), text: label,
       onclick: () => { state.preset = k; state.from = state.to = null; render(); } }));
   }
+  const { min, max } = dataBounds();
   $('f-from').value = toInput(P.from);
   $('f-to').value = toInput(P.to);
-  $('f-from').min = $('f-to').min = toInput(DB.minDay);
-  $('f-from').max = $('f-to').max = toInput(DB.maxDay);
-  const uniq = (key, filter) => [...new Set(DB.rows.filter(filter || (() => true)).map((r) => r[key]))].filter(Boolean).sort((a, b) => a.localeCompare(b, 'vi'));
-  const accs = new Map(DB.rows.map((r) => [r.acc, r.accName ? `${r.accName} (${r.acc})` : r.acc]));
-  fillSelect($('f-acc'), [...accs.entries()].sort((a, b) => a[1].localeCompare(b[1], 'vi')), state.acc, 'Tất cả');
-  fillSelect($('f-camp'), uniq('camp', (r) => !state.acc || r.acc === state.acc).map((v) => [v, v]), state.camp, 'Tất cả');
-  fillSelect($('f-type'), uniq('type').map((v) => [v, v]), state.type, 'Tất cả');
-  fillSelect($('f-prod'), uniq('prod').map((v) => [v, v]), state.prod, 'Tất cả');
+  $('f-from').min = $('f-to').min = toInput(min);
+  $('f-from').max = $('f-to').max = toInput(max);
+  if (GA) {
+    const accs = new Map(GA.rows.map((r) => [r.acc, r.accName ? `${r.accName} (${r.acc})` : r.acc]));
+    fillSelect($('f-acc'), [...accs.entries()].sort((a, b) => a[1].localeCompare(b[1], 'vi')), state.acc, 'Tất cả');
+    // Chỉ liệt kê chiến dịch hợp với các bộ lọc khác đang chọn, để không chọn ra tổ hợp rỗng.
+    fillSelect($('f-camp'), uniqSorted(GA.rows, 'camp', (r) => (!state.acc || r.acc === state.acc) && (!state.type || r.type === state.type) && prodPass(r)).map((v) => [v, v]), state.camp, 'Tất cả');
+    fillSelect($('f-type'), uniqSorted(GA.rows, 'type').map((v) => [v, v]), state.type, 'Tất cả');
+  }
+  if (FBD) {
+    fillSelect($('f-fbcamp'), uniqSorted(FBD.rows, 'camp', (r) => (!state.fbObj || r.grp === state.fbObj) && prodPass(r)).map((v) => [v, v]), state.fbCamp, 'Tất cả');
+    const groups = [...new Set(FBD.rows.map((r) => r.grp))].map((g) => [g, FB_GROUP_LABEL[g]]).sort((a, b) => a[1].localeCompare(b[1], 'vi'));
+    fillSelect($('f-fbobj'), groups, state.fbObj, 'Tất cả');
+  }
+  const prods = new Set([...(GA && state.view !== 'fb' ? GA.rows : []), ...(FBD && state.view !== 'ga' ? FBD.rows : [])].map((r) => r.prod));
+  fillSelect($('f-prod'), [...prods].filter(Boolean).sort((a, b) => a.localeCompare(b, 'vi')).map((v) => [v, v]), state.prod, 'Tất cả');
   const p = $('period');
   p.textContent = '';
   p.append('Kỳ này: ', el('b', { text: `${fmtDay(P.from)} – ${fmtDay(P.to)} (${P.n} ngày)` }),
     `   ·   So với kỳ trước cùng số ngày: ${fmtDay(P.pFrom)} – ${fmtDay(P.pTo)}`);
 }
 
-function renderNotices(P, cur) {
+function renderNotices(P) {
   const box = $('notices');
   box.textContent = '';
-  if (CUR === 'NHIỀU') box.append(el('div', { class: 'notice warn', text: '⚠ Kỳ đang chọn có nhiều loại tiền tệ: chọn một tài khoản để xem tổng đúng.' }));
-  if (!cur.n) box.append(el('div', { class: 'notice warn', text: 'Không có dữ liệu trong kỳ và bộ lọc đang chọn.' }));
-  if (P.to > DB.maxDay) box.append(el('div', { class: 'notice warn', text: `Dữ liệu mới có đến ${fmtDay(DB.maxDay)}; các ngày sau đó chưa được đồng bộ.` }));
-  if (DB.lastRun && DB.lastRun.status !== 'Thành công') {
-    box.append(el('div', { class: 'notice err', text: `Lần đồng bộ gần nhất (${fmtStamp(DB.lastRun.start)}) có trạng thái “${DB.lastRun.status}”${DB.lastRun.note ? ': ' + DB.lastRun.note : ''}.` }));
+  const warn = (text) => box.append(el('div', { class: 'notice warn', text }));
+  if (CUR === 'NHIỀU') warn('⚠ Kỳ đang chọn có nhiều loại tiền tệ: chọn một tài khoản hoặc một nền tảng để xem tổng đúng.');
+  if (P.to > P.max) warn(`Dữ liệu mới có đến ${fmtDay(P.max)}; các ngày sau đó chưa được đồng bộ.`);
+  if (state.view === 'all' && GA && FBD && GA.maxDay !== FBD.maxDay) {
+    warn(`Google Ads có số đến ${fmtDay(GA.maxDay)}, Facebook Ads có số đến ${fmtDay(FBD.maxDay)}. Báo cáo tổng thể mặc định dừng ở ${fmtDay(Math.min(GA.maxDay, FBD.maxDay))} để hai nền tảng cùng kỳ.`);
+  }
+  if (!FBD && state.view !== 'ga') warn('Chưa có dữ liệu Facebook Ads trong Google Sheet' + (FB_NOTE ? ` (${FB_NOTE})` : '') + '. Báo cáo tổng thể đang chỉ có Google Ads.');
+  for (const [name, D] of [['Google Ads', GA], ['Facebook Ads', FBD]]) {
+    if (D && D.lastRun && D.lastRun.status !== 'Thành công') {
+      box.append(el('div', { class: 'notice err', text: `${name}: lần đồng bộ gần nhất (${fmtStamp(D.lastRun.start)}) có trạng thái “${D.lastRun.status}”${D.lastRun.note ? ': ' + D.lastRun.note : ''}.` }));
+    }
   }
 }
 
-// [nhãn, khoá, định dạng, chiều tốt (1 tăng là tốt, -1 giảm là tốt, 0 trung tính), ghi chú]
-const KPI_ROW1 = [
+// ===== Tổng thể =====
+const ALL_METRICS = {
+  cost: { label: 'Chi phí', title: 'chi phí theo nền tảng', key: 'cost', fmt: (v) => fmt.money(v) },
+  impr: { label: 'Lượt hiển thị', title: 'lượt hiển thị theo nền tảng', key: 'impr', fmt: fmt.int },
+  cpm: { label: 'CPM', title: 'CPM theo nền tảng', fmt: (v) => fmt.money(v) },
+};
+function renderAll(P) {
+  const gaIn = (a, b) => (GA ? GA.rows.filter((r) => inRange(r, a, b) && prodPass(r)) : []);
+  const fbIn = (a, b) => (FBD ? FBD.rows.filter((r) => inRange(r, a, b) && prodPass(r)) : []);
+  const plat = (gaRows, fbRows) => {
+    const g = agg(gaRows), f = FBD ? fbAgg(fbRows) : null;
+    const cost = g.cost + (f ? f.cost : 0), impr = g.impr + (f ? f.impr : 0);
+    return { n: g.n + (f ? f.n : 0), cost, impr, cpm: impr > 0 ? cost / impr * 1000 : null, gCost: GA ? g.cost : null, fCost: f ? f.cost : null,
+      gShare: GA && cost > 0 ? g.cost / cost : null, fShare: f && cost > 0 ? f.cost / cost : null, g, f };
+  };
+  const cur = plat(gaIn(P.from, P.to), fbIn(P.from, P.to)), prev = plat(gaIn(P.pFrom, P.pTo), fbIn(P.pFrom, P.pTo));
+  kpiTiles('all-kpis', [
+    ['Tổng chi phí digital', 'cost', 'money', 0], ['Chi phí Google Ads', 'gCost', 'money', 0], ['Chi phí Facebook Ads', 'fCost', 'money', 0],
+    ['Tỷ trọng Google', 'gShare', 'pct1', 0], ['Tỷ trọng Facebook', 'fShare', 'pct1', 0],
+    ['Tổng lượt hiển thị', 'impr', 'int', 1], ['CPM chung', 'cpm', 'money', -1, 'Tổng chi phí ÷ tổng lượt hiển thị × 1.000'],
+  ], cur, prev);
+
+  // Bảng so sánh nền tảng.
+  const gk = GA ? gaKpis(P.from, P.to, prodPass) : { n: 0 };
+  const fk = FBD ? fbKpis(P.from, P.to, prodPass) : { n: 0 };
+  const total = (gk.cost || 0) + (fk.cost || 0);
+  const rowFor = (name, color, k, clkLabel, clicks, results, view) => el('tr', { class: 'click', title: `Mở báo cáo ${name}` },
+    el('td', {}, el('span', { class: 'swatch', style: `background:${color}` }), name),
+    el('td', { text: k.n ? fmt.money(k.cost) : 'Chưa có dữ liệu' }), el('td', { text: k.n && total > 0 ? fmt.pct1(k.cost / total) : '–' }),
+    el('td', { text: k.n ? fmt.int(k.impr) : '–' }), el('td', { text: k.n ? fmt.money(k.cpm) : '–' }),
+    el('td', { class: 'l', text: clkLabel }), el('td', { text: k.n ? fmt.int(clicks) : '–' }),
+    el('td', { text: k.n ? fmt.pct(div(clicks, k.impr)) : '–' }), el('td', { text: k.n ? fmt.money(div(k.cost, clicks)) : '–' }),
+    el('td', { class: 'reason', text: k.n ? results : '' }));
+  const pt = $('all-platforms');
+  pt.textContent = '';
+  const trs = [];
+  if (GA) {
+    const tr = rowFor('Google Ads', 'var(--series-1)', gk, 'Lượt nhấp (Google)', gk.clk,
+      `Chuyển đổi ${fmt.dec1(gk.conv)} (số Google ghi nhận, CPA ${fmt.money(gk.cpa)}); giá trị chuyển đổi ${fmt.money(gk.val)}.`);
+    tr.addEventListener('click', () => setView('ga'));
+    trs.push(tr);
+  }
+  if (FBD) {
+    const tr = rowFor('Facebook Ads', 'var(--series-2)', fk, 'Lượt nhấp liên kết', fk.link,
+      `Xem trang đích ${fmt.int(fk.lpv)}, ThruPlay ${fmt.int(fk.thru)} (${fmt.money(fk.cpThru)}/ThruPlay)` +
+      (fk.msg ? `, tin nhắn ${fmt.int(fk.msg)}` : '') + (fk.lead ? `, lead ${fmt.int(fk.lead)}` : '') + (fk.purch ? `, purchase ${fmt.int(fk.purch)}` : '') + '.');
+    tr.addEventListener('click', () => setView('fb'));
+    trs.push(tr);
+  }
+  pt.append(el('table', {},
+    el('thead', {}, el('tr', {}, ['Nền tảng', 'Chi phí', 'Tỷ trọng', 'Hiển thị', 'CPM', 'Loại lượt nhấp', 'Lượt nhấp', 'CTR', 'Chi phí/nhấp', 'Kết quả nền tảng ghi nhận']
+      .map((h, i) => el('th', { class: i === 5 || i === 9 ? 'l' : null, text: h })))),
+    el('tbody', {}, trs),
+    el('tfoot', {}, el('tr', {}, el('td', { text: 'Tổng' }), el('td', { text: fmt.money(total) }), el('td', { text: total > 0 ? fmt.pct1(1) : '–' }),
+      el('td', { text: fmt.int((gk.impr || 0) + (fk.impr || 0)) }), el('td', { text: fmt.money(cur.cpm) }),
+      el('td', { class: 'l', text: 'Không cộng chung' }), el('td'), el('td'), el('td'), el('td')))));
+
+  // Xu hướng theo nền tảng.
+  const step = stepOf(P);
+  const M = ALL_METRICS[state.metric.all] || ALL_METRICS.cost;
+  const xs = makeBuckets(P.from, P.to, step);
+  const gB = fillBuckets(xs, gaIn(P.from, P.to), ['cost', 'impr']);
+  const fB = fillBuckets(xs, fbIn(P.from, P.to), ['cost', 'impr']);
+  const val = (b) => (!b.days ? null : M.key ? b[M.key] : b.impr > 0 ? b.cost / b.impr * 1000 : null);
+  const series = [];
+  if (GA) series.push({ name: 'Google Ads', color: 'var(--series-1)', values: gB.map(val) });
+  if (FBD) series.push({ name: 'Facebook Ads', color: 'var(--series-2)', values: fB.map(val) });
+  metricSeg($('all-metric'), ALL_METRICS, 'all', () => renderAll(period()));
+  $('all-trend-title').textContent = 'Xu hướng ' + M.title;
+  $('all-trend-sub').textContent = (step === 1 ? 'Theo ngày' : 'Theo tuần (kỳ trên 62 ngày)') + `, ${fmtDay(P.from)} – ${fmtDay(P.to)}.`;
+  legend($('all-legend'), series);
+  lineChart($('all-chart'), xs, series, M.fmt, M.label);
+  trendTable($('all-trend-table'), xs, series, M.fmt, step);
+
+  // Chi phí theo nhóm sản phẩm.
+  const byProd = new Map();
+  const addProd = (rows, k) => rows.forEach((r) => { const p = byProd.get(r.prod) || { g: 0, f: 0 }; p[k] += r.cost; byProd.set(r.prod, p); });
+  addProd(gaIn(P.from, P.to), 'g');
+  addProd(fbIn(P.from, P.to), 'f');
+  const prodRows = [...byProd.entries()].map(([k, v]) => ({ k, ...v, t: v.g + v.f })).sort((a, b) => b.t - a.t);
+  const pb = $('all-products');
+  pb.textContent = '';
+  pb.append(prodRows.length ? el('table', {},
+    el('thead', {}, el('tr', {}, ['Nhóm sản phẩm', 'Google Ads', 'Facebook Ads', 'Tổng', 'Tỷ trọng'].map((h) => el('th', { text: h })))),
+    el('tbody', {}, prodRows.map((r) => el('tr', { class: 'click', title: 'Bấm để lọc theo nhóm sản phẩm này', onclick: () => { state.prod = state.prod === r.k ? '' : r.k; render(); } },
+      el('td', { text: r.k }), el('td', { text: GA ? fmt.money(r.g) : '–' }), el('td', { text: FBD ? fmt.money(r.f) : '–' }),
+      el('td', { text: fmt.money(r.t) }), el('td', { text: total > 0 ? fmt.pct1(r.t / total) : '–' })))))
+    : el('p', { class: 'muted', style: 'padding:12px', text: 'Chưa có dữ liệu.' }));
+
+  // Theo tháng.
+  const tagged = [...gaIn(P.from, P.to).map((r) => ({ d: r.d, g: r.cost, f: 0, impr: r.impr })), ...fbIn(P.from, P.to).map((r) => ({ d: r.d, g: 0, f: r.cost, impr: r.impr }))];
+  monthTable($('all-months'), tagged, P, P.max, ['Google Ads', 'Facebook Ads', 'Tổng chi phí', 'Tỷ trọng Facebook', 'Hiển thị', 'CPM chung'], (rows) => {
+    const g = sumBy(rows, 'g'), f = sumBy(rows, 'f'), t = g + f, i = sumBy(rows, 'impr');
+    return [GA ? fmt.money(g) : '–', FBD ? fmt.money(f) : '–', fmt.money(t), FBD && t > 0 ? fmt.pct1(f / t) : '–', fmt.int(i), fmt.money(i > 0 ? t / i * 1000 : null)];
+  });
+
+  // Nhận xét.
+  const lines = [];
+  if (!cur.n) lines.push('Không có dữ liệu trong kỳ và bộ lọc đang chọn.');
+  else {
+    lines.push(`Tổng chi phí digital ${fmt.money(cur.cost)} trong ${P.n} ngày` +
+      (GA && FBD ? ` (Google Ads ${fmt.pct1(cur.gShare)}, Facebook Ads ${fmt.pct1(cur.fShare)})` : '') + '; ' + changeText(cur.cost, prev.n ? prev.cost : 0, P));
+    if (GA) lines.push(`Google Ads: ${fmt.money(cur.gCost)}; ` + changeText(cur.gCost, prev.n ? prev.gCost : 0, P));
+    if (FBD) lines.push(`Facebook Ads: ${fmt.money(cur.fCost)}; ` + changeText(cur.fCost, prev.n ? prev.fCost : 0, P));
+    if (GA && FBD && gk.n && fk.n) {
+      lines.push(`CPM: Google Ads ${fmt.money(gk.cpm)}, Facebook Ads ${fmt.money(fk.cpm)}. Facebook đang chủ yếu chạy mục tiêu nhận diện và lưu lượng truy cập, ` +
+        'Google chạy tìm kiếm và tạo nhu cầu, nên CPM chỉ phản ánh giá tiếp cận, không phản ánh hiệu quả chuyển đổi.');
+      lines.push(`Lượt nhấp: Google ${fmt.int(gk.clk)} (CPC ${fmt.money(gk.cpc)}), Facebook ${fmt.int(fk.link)} lượt nhấp liên kết (CPC liên kết ${fmt.money(fk.cpcLink)}). Hai loại lượt nhấp có định nghĩa khác nhau nên không cộng chung.`);
+    }
+    const top = prodRows[0];
+    if (top) lines.push(top.k === UNCLASSIFIED ? `${fmt.pct1(total > 0 ? top.t / total : 0)} chi phí chưa gắn nhóm sản phẩm. Điền cột Nhóm sản phẩm trong GA_Ánh xạ chiến dịch và FB_Ánh xạ chiến dịch để xem phân bổ theo sản phẩm.`
+      : `Nhóm sản phẩm chi nhiều nhất: ${top.k} (${fmt.pct1(total > 0 ? top.t / total : 0)} tổng chi phí).`);
+  }
+  comments('all-comments', lines);
+}
+
+// ===== Google Ads =====
+const GA_ROW1 = [
   ['Chi phí', 'cost', 'money', 0], ['Lượt hiển thị', 'impr', 'int', 1], ['Lượt nhấp', 'clk', 'int', 1],
   ['CTR', 'ctr', 'pct', 1], ['CPC', 'cpc', 'money', -1], ['Chuyển đổi', 'conv', 'dec1', 1, 'Số Google Ads ghi nhận, không phải số đơn hàng'],
   ['CPA', 'cpa', 'money', -1], ['Giá trị chuyển đổi', 'val', 'money', 1, 'Giá trị gán trong Google Ads, không phải doanh thu thực thu'], ['ROAS', 'roas', 'dec2', 1],
 ];
-const KPI_ROW2 = [
+const GA_ROW2 = [
   ['Lead', 'lead', 'int', 1], ['CPL', 'cpl', 'money', -1], ['Purchase', 'purch', 'int', 1], ['Chi phí / Purchase', 'cpp', 'money', -1],
   ['CPM', 'cpm', 'money', -1], ['Chuyển đổi / nhấp', 'cvr', 'pct', 0],
 ];
-function renderKpis(cur, prev) {
-  const draw = (id, defs) => {
-    const box = $(id);
-    box.textContent = '';
-    for (const [label, k, f, dir, hint] of defs) {
-      const v = cur.n ? cur[k] : null, pv = prev.n ? prev[k] : null;
-      const has = isNum(v);
-      const ch = has && isNum(pv) && pv !== 0 ? v / pv - 1 : null;
-      const cls = !isNum(ch) || !dir || ch === 0 ? '' : (ch > 0) === (dir > 0) ? 'good' : 'bad';
-      box.append(el('div', { class: 'tile' + (has ? '' : ' none'), title: hint || null },
-        el('div', { class: 'lbl', text: label }),
-        el('div', { class: 'val', text: has ? fmt[f](v) : '–' }),
-        el('div', { class: 'prev', text: has ? 'Kỳ trước: ' + (isNum(pv) ? fmt[f](pv) : '–') : 'Chưa có dữ liệu' }),
-        el('div', { class: 'delta ' + cls, text: isNum(ch) ? (ch > 0 ? '▲ ' : ch < 0 ? '▼ ' : '') + fmt.signed(ch) : ' ' })));
-    }
-  };
-  draw('kpis-1', KPI_ROW1);
-  draw('kpis-2', KPI_ROW2);
-}
-
-function renderComments(P, cur, prev, camps) {
-  const ul = $('comments');
-  ul.textContent = '';
-  const add = (s) => ul.append(el('li', { text: s }));
-  if (!cur.n) { add('Không có chiến dịch nào có số liệu trong kỳ và bộ lọc đang chọn.'); return; }
-  const { an, chg } = DB.cfg;
-  const m = fmt.money;
-  add(`Chi phí ${m(cur.cost)} trong ${P.n} ngày; ` + (!prev.n || !prev.cost ? 'kỳ trước không có chi phí.'
-    : `${cur.cost >= prev.cost ? 'tăng' : 'giảm'} ${fmt.pct1(Math.abs(cur.cost / prev.cost - 1))} so với kỳ trước (${fmtDM(P.pFrom)} – ${fmtDay(P.pTo)}).`));
-  const cpcCh = isNum(cur.cpc) && prev.n && isNum(prev.cpc) && prev.cpc ? cur.cpc / prev.cpc - 1 : null;
-  add(`CPC ${m(cur.cpc)}, CTR ${fmt.pct(cur.ctr)}` + (prev.n && isNum(prev.cpc) ? ` (kỳ trước CPC ${m(prev.cpc)}, CTR ${fmt.pct(prev.ctr)})` : '') + '. ' +
-    (isNum(cpcCh) ? (Math.abs(cpcCh) > chg ? `CPC biến động ${fmt.signed(cpcCh)}, vượt ngưỡng ±${fmt.pct0(chg)}.` : `Biến động CPC trong ngưỡng ±${fmt.pct0(chg)}.`) : ''));
-  let s3 = `Chuyển đổi ${fmt.dec1(cur.conv)}, CPA ${m(cur.cpa)}, chuyển đổi / lượt nhấp ${fmt.pct1(cur.cvr)}. `;
-  if (isNum(cur.cvr) && cur.cvr > an) {
-    s3 += `Tỷ lệ này vượt ngưỡng ${fmt.pct0(an)}: có thể Google đang tính cả hành động phụ là chuyển đổi chính; cần kiểm tra GA_Ánh xạ chuyển đổi và mục Mục tiêu trong Google Ads.`;
-    const byAction = new Map();
-    let tot = 0;
-    for (const r of DB.conv) if (inRange(r, P.from, P.to) && passDims(r)) { byAction.set(r.action, (byAction.get(r.action) || 0) + r.conv); tot += r.conv; }
-    const top = [...byAction.entries()].sort((a, b) => b[1] - a[1])[0];
-    if (top && tot > 0) s3 += ` Conversion action đóng góp nhiều nhất: “${top[0]}” (${fmt.pct1(top[1] / tot)} số chuyển đổi).`;
-  } else s3 += 'Chuyển đổi Google không phải số đơn hàng.';
-  add(s3);
-  add(cur.val > 0 ? `Giá trị chuyển đổi ${m(cur.val)}, ROAS ${fmt.dec2(cur.roas)}. Đây là giá trị gán trong Google Ads, không phải doanh thu thực thu.`
-    : 'Chưa ghi nhận giá trị chuyển đổi nên chưa tính được ROAS. Doanh thu thực thu cần nguồn CRM.');
-  const list = [...camps.list].sort((a, b) => b.cost - a.cost);
-  if (list.length) add(`Chiến dịch chi nhiều nhất: ${list[0].name} (${fmt.pct1(list[0].share)} chi phí kỳ này, mục tiêu: ${list[0].obj}).`);
-  const noProd = list.filter((c) => c.prod === UNCLASSIFIED), noObj = list.filter((c) => c.obj === UNCLASSIFIED);
-  add(!noProd.length && !noObj.length ? 'Tất cả chiến dịch trong kỳ đã có nhóm sản phẩm và mục tiêu.'
-    : `${noProd.length} chiến dịch chưa có nhóm sản phẩm (${fmt.pct1(noProd.reduce((t, c) => t + c.share, 0))} chi phí) và ${noObj.length} chiến dịch chưa có mục tiêu; vẫn được tính vào tổng. Điền trong GA_Ánh xạ chiến dịch.`);
-  add(!DB.hasLead && !DB.hasPurchase ? 'Chưa xác nhận conversion action nào là Lead hoặc Purchase, nên Lead, CPL, Purchase hiển thị “Chưa có dữ liệu”. Điền cột Loại trong GA_Ánh xạ chuyển đổi.'
-    : `Lead: ${DB.hasLead ? fmt.int(cur.lead) + (isNum(cur.cpl) ? ', CPL ' + m(cur.cpl) : '') : 'chưa xác nhận'}   ·   Purchase: ${DB.hasPurchase ? fmt.int(cur.purch) + (isNum(cur.cpp) ? ', chi phí/purchase ' + m(cur.cpp) : '') : 'chưa xác nhận'}.`);
-  const cnt = (lv) => list.filter((c) => c.level === lv).length;
-  const u = cnt('Chưa phân loại mục tiêu'), nd = cnt('Chưa có định nghĩa Lead') + cnt('Chưa có định nghĩa Purchase');
-  add(`Đánh giá ${list.length} chiến dịch: ${cnt('Cảnh báo')} cảnh báo, ${cnt('Cần kiểm tra')} cần kiểm tra, ${cnt('Tốt')} tốt, ${cnt('Bình thường')} bình thường, ${cnt('Chưa đủ dữ liệu')} chưa đủ dữ liệu` +
-    (u ? `, ${u} chưa phân loại mục tiêu (chưa đánh giá được; điền cột Mục tiêu trong GA_Ánh xạ chiến dịch)` : '') + (nd ? `, ${nd} chờ xác nhận Lead/Purchase` : '') +
-    `. So với trung vị các chiến dịch cùng mục tiêu, ngưỡng ±${fmt.pct0(DB.cfg.thr)}; chỉ đánh giá khi có từ ${fmt.int(DB.cfg.minI)} hiển thị và ${m(DB.cfg.minC)} chi phí.`);
-}
-
-// ----- Biểu đồ xu hướng (một trục; kỳ này so với kỳ trước) -----
-function niceMax(v) {
-  if (!(v > 0)) return 1;
-  const p = Math.pow(10, Math.floor(Math.log10(v)));
-  for (const k of [1, 2, 2.5, 5, 10]) if (k * p >= v) return k * p;
-  return 10 * p;
-}
-function renderTrend(P) {
-  const seg = $('metric-seg');
-  seg.textContent = '';
-  for (const [k, def] of Object.entries(METRICS)) {
-    seg.append(el('button', { class: 'chip', type: 'button', 'aria-pressed': String(state.metric === k), text: def.label,
-      onclick: () => { state.metric = k; renderTrend(period()); } }));
-  }
-  const step = P.n <= 62 ? 1 : 7;
-  const cur = buckets(P.from, P.to, step), prev = buckets(P.pFrom, P.pTo, step);
-  const M = METRICS[state.metric];
-  const ys = cur.map(M.f), ps = prev.map(M.f);
-  $('trend-title').textContent = 'Xu hướng ' + M.label.toLowerCase().replace('cpc', 'CPC').replace('ctr', 'CTR').replace('cpa', 'CPA');
-  $('trend-sub').textContent = (step === 1 ? 'Theo ngày' : 'Theo tuần (kỳ trên 62 ngày)') + '. Đường kỳ trước được dóng theo thứ tự ngày để so cùng vị trí.';
-  const leg = $('trend-legend');
-  leg.textContent = '';
-  leg.append(el('span', {}, el('i', { class: 'key', style: 'background:var(--series-1)' }), `Kỳ này (${fmtDM(P.from)} – ${fmtDay(P.to)})`),
-    el('span', {}, el('i', { class: 'key', style: 'background:var(--series-2)' }), `Kỳ trước (${fmtDM(P.pFrom)} – ${fmtDay(P.pTo)})`));
-
-  const wrap = $('trend-wrap');
-  wrap.textContent = '';
-  const W = Math.max(280, wrap.clientWidth || 800), H = W < 500 ? 240 : 280;
-  const L = 64, R = 12, T = 12, B = 28, pw = W - L - R, ph = H - T - B;
-  const svg = svgEl('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, width: W, height: H, style: `height:${H}px`, tabindex: '0', role: 'img',
-    'aria-label': `Biểu đồ ${M.label} kỳ này so với kỳ trước; dùng phím mũi tên trái/phải để xem từng điểm` });
-  const maxV = niceMax(Math.max(0, ...ys.filter(isNum), ...ps.filter(isNum)));
-  const x = (i) => L + (cur.length === 1 ? pw / 2 : (i * pw) / (cur.length - 1));
-  const y = (v) => T + ph - (v / maxV) * ph;
-  for (let i = 0; i <= 4; i++) {
-    const v = (maxV * i) / 4, yy = y(v);
-    svg.append(svgEl('line', { class: i ? 'gridline' : 'baseline', x1: L, x2: W - R, y1: yy, y2: yy }));
-    const t = svgEl('text', { class: 'tick-y', x: L - 8, y: yy + 4, 'text-anchor': 'end' });
-    t.textContent = M.pct ? fmt.pct1(v) : fmt.compact(v, false);
-    svg.append(t);
-  }
-  const nLabels = Math.min(cur.length, W < 500 ? 4 : 8);
-  for (let j = 0; j < nLabels; j++) {
-    const i = nLabels === 1 ? 0 : Math.round((j * (cur.length - 1)) / (nLabels - 1));
-    const t = svgEl('text', { x: x(i), y: H - 8, 'text-anchor': j === 0 ? 'start' : j === nLabels - 1 ? 'end' : 'middle' });
-    t.textContent = fmtDM(cur[i].s);
-    svg.append(t);
-  }
-  const path = (vals) => {
-    let d = '', open = false;
-    vals.forEach((v, i) => { if (isNum(v)) { d += (open ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); open = true; } else open = false; });
-    return d;
-  };
-  const curPath = path(ys);
-  if (curPath && ys.every(isNum)) {
-    svg.append(svgEl('path', { d: curPath + `L${x(ys.length - 1).toFixed(1)},${y(0)}L${x(0).toFixed(1)},${y(0)}Z`, fill: 'var(--series-1)', 'fill-opacity': '0.1' }));
-  }
-  svg.append(svgEl('path', { d: path(ps), fill: 'none', stroke: 'var(--series-2)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
-  svg.append(svgEl('path', { d: curPath, fill: 'none', stroke: 'var(--series-1)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
-
-  // Lớp di chuột: đường dóng dọc bắt điểm gần nhất, chú thích liệt kê cả hai đường.
-  const hair = svgEl('line', { x1: 0, x2: 0, y1: T, y2: T + ph, stroke: 'var(--axis)', 'stroke-width': 1, visibility: 'hidden' });
-  const dotC = svgEl('circle', { r: 4, fill: 'var(--series-1)', stroke: '#fff', 'stroke-width': 2, visibility: 'hidden' });
-  const dotP = svgEl('circle', { r: 4, fill: 'var(--series-2)', stroke: '#fff', 'stroke-width': 2, visibility: 'hidden' });
-  const hit = svgEl('rect', { x: L, y: T, width: pw, height: ph, fill: 'transparent' });
-  svg.append(hair, dotP, dotC, hit);
-  wrap.append(svg);
-  const tip = el('div', { class: 'tip hidden' });
-  wrap.append(tip);
-  const range = (b) => (b.s === b.e ? fmtDay(b.s) : `${fmtDM(b.s)} – ${fmtDay(b.e)}`);
-  let idx = -1;
-  const show = (i) => {
-    idx = Math.max(0, Math.min(cur.length - 1, i));
-    const xx = x(idx);
-    hair.setAttribute('x1', xx); hair.setAttribute('x2', xx); hair.setAttribute('visibility', 'visible');
-    for (const [dot, v] of [[dotC, ys[idx]], [dotP, ps[idx]]]) {
-      if (isNum(v)) { dot.setAttribute('cx', xx); dot.setAttribute('cy', y(v)); dot.setAttribute('visibility', 'visible'); } else dot.setAttribute('visibility', 'hidden');
-    }
-    tip.textContent = '';
-    tip.append(el('div', { class: 't', text: M.label }),
-      el('div', { class: 'r' }, el('i', { class: 'key', style: 'background:var(--series-1)' }), el('strong', { text: fmtMetric(state.metric, ys[idx]) }), el('em', { text: range(cur[idx]) })),
-      prev[idx] ? el('div', { class: 'r' }, el('i', { class: 'key', style: 'background:var(--series-2)' }), el('strong', { text: fmtMetric(state.metric, ps[idx]) }), el('em', { text: range(prev[idx]) })) : null);
-    tip.classList.remove('hidden');
-    const scale = wrap.clientWidth / W;
-    const px = xx * scale, tw = tip.offsetWidth;
-    tip.style.left = (px + 14 + tw > wrap.clientWidth ? px - 14 - tw : px + 14) + 'px';
-    tip.style.top = '8px';
-  };
-  const hide = () => { idx = -1; tip.classList.add('hidden'); [hair, dotC, dotP].forEach((n) => n.setAttribute('visibility', 'hidden')); };
-  hit.addEventListener('pointermove', (e) => {
-    const r = svg.getBoundingClientRect();
-    const px = ((e.clientX - r.left) / r.width) * W;
-    show(cur.length === 1 ? 0 : Math.round(((px - L) / pw) * (cur.length - 1)));
-  });
-  hit.addEventListener('pointerleave', hide);
-  svg.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); show(idx < 0 ? 0 : idx + (e.key === 'ArrowRight' ? 1 : -1)); }
-    if (e.key === 'Escape') hide();
-  });
-  svg.addEventListener('blur', hide);
-
-  const tv = $('trend-table');
-  tv.textContent = '';
-  tv.append(el('table', {},
-    el('thead', {}, el('tr', {}, el('th', { text: step === 1 ? 'Ngày' : 'Tuần' }), el('th', { text: M.label + ' kỳ này' }), el('th', { class: 'l', text: 'Kỳ trước' }), el('th', { text: M.label + ' kỳ trước' }))),
-    el('tbody', {}, cur.map((b, i) => el('tr', {}, el('td', { text: range(b) }), el('td', { text: fmtMetric(state.metric, ys[i]) }),
-      el('td', { class: 'l', text: prev[i] ? range(prev[i]) : '' }), el('td', { text: fmtMetric(state.metric, ps[i]) }))))));
-}
-
-// ----- Phân bổ -----
-function barList(box, items, activeKey, onPick) {
-  box.textContent = '';
-  if (!items.length) { box.append(el('p', { class: 'muted', text: 'Chưa có dữ liệu.' })); return; }
-  const max = Math.max(...items.map((i) => i.share));
-  for (const it of items) {
-    const row = el('div', { class: 'bar-row' + (activeKey && it.key === activeKey ? ' active' : ''), role: 'button', tabindex: it.key ? '0' : null,
-      title: `${it.label}: ${fmt.money(it.cost)} (${fmt.pct1(it.share)})` },
-      el('span', { class: 'name', text: it.label }),
-      el('div', { class: 'bar-track' }, el('div', { class: 'bar', style: `width:${max > 0 ? (it.share / max) * 100 : 0}%` })),
-      el('span', { class: 'v', text: `${fmt.pct1(it.share)} · ${fmt.money(it.cost)}` }));
-    if (it.key) {
-      const pick = () => onPick(it.key);
-      row.addEventListener('click', pick);
-      row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
-    }
-    box.append(row);
-  }
-}
-function renderAlloc(camps) {
-  const list = [...camps.list].sort((a, b) => b.cost - a.cost);
-  const top = list.slice(0, 10).map((c) => ({ key: c.name, label: c.name, cost: c.cost, share: c.share }));
-  const rest = list.slice(10);
-  if (rest.length) top.push({ key: '', label: `${rest.length} chiến dịch khác`, cost: rest.reduce((t, c) => t + c.cost, 0), share: rest.reduce((t, c) => t + c.share, 0) });
-  barList($('alloc-camp'), top, state.camp, (k) => { state.camp = state.camp === k ? '' : k; render(); });
-
+const GA_COLS = [
+  ['name', 'Chiến dịch', (c) => c.name, 'l'], ['type', 'Loại', (c) => c.type, 'l'], ['prod', 'Nhóm sản phẩm', (c) => c.prod, 'l'], ['obj', 'Mục tiêu', (c) => c.obj, 'l'],
+  ['cost', 'Chi phí', (c) => fmt.money(c.cost)], ['share', 'Tỷ trọng', (c) => fmt.pct1(c.share)], ['impr', 'Hiển thị', (c) => fmt.int(c.impr)],
+  ['clk', 'Lượt nhấp', (c) => fmt.int(c.clk)], ['ctr', 'CTR', (c) => fmt.pct(c.ctr)], ['cpc', 'CPC', (c) => fmt.money(c.cpc)], ['cpm', 'CPM', (c) => fmt.money(c.cpm)],
+  ['conv', 'Chuyển đổi', (c) => fmt.dec1(c.conv)], ['cpa', 'CPA', (c) => fmt.money(c.cpa)], ['val', 'Giá trị CĐ', (c) => fmt.money(c.val)], ['roas', 'ROAS', (c) => fmt.dec2(c.roas)],
+  ['lead', 'Lead', (c) => (GA.hasLead ? fmt.int(c.lead) : 'Chưa có dữ liệu')], ['cpl', 'CPL', (c) => (GA.hasLead ? fmt.money(c.cpl) : 'Chưa có dữ liệu')],
+  ['purch', 'Purchase', (c) => (GA.hasPurchase ? fmt.int(c.purch) : 'Chưa có dữ liệu')], ['level', 'Đánh giá', (c) => badge(c.level), 'l'], ['reason', 'Lý do', (c) => c.reason, 'reason'],
+];
+function renderGA(P) {
+  const cur = gaKpis(P.from, P.to), prev = gaKpis(P.pFrom, P.pTo);
+  const camps = gaCampaigns(P);
+  kpiTiles('ga-kpis-1', GA_ROW1, cur, prev);
+  kpiTiles('ga-kpis-2', GA_ROW2, cur, prev);
+  gaComments(P, cur, prev, camps);
+  periodTrend('ga', P, GA.rows, gaPass, ['cost', 'impr', 'clk', 'conv', 'val'], GA_METRICS);
+  campAlloc('ga-alloc-camp', camps, state.camp, (k) => { state.camp = state.camp === k ? '' : k; render(); });
   const byProd = new Map();
-  for (const c of list) {
+  for (const c of camps.list) {
     const p = byProd.get(c.prod) || { cost: 0, clk: 0, conv: 0, val: 0 };
     p.cost += c.cost; p.clk += c.clk; p.conv += c.conv; p.val += c.val;
     byProd.set(c.prod, p);
   }
   const prods = [...byProd.entries()].map(([k, p]) => ({ key: k, label: k, ...p, share: camps.total > 0 ? p.cost / camps.total : 0 })).sort((a, b) => b.cost - a.cost);
-  barList($('alloc-prod'), prods, state.prod, (k) => { state.prod = state.prod === k ? '' : k; render(); });
-  const pt = $('prod-table');
+  barList($('ga-alloc-prod'), prods, state.prod, (k) => { state.prod = state.prod === k ? '' : k; render(); });
+  const pt = $('ga-prod-table');
   pt.textContent = '';
   if (prods.length) {
     pt.append(el('table', {},
@@ -864,80 +1284,128 @@ function renderAlloc(camps) {
       el('tbody', {}, prods.map((p) => el('tr', {}, el('td', { text: p.label }), el('td', { text: fmt.money(p.cost) }), el('td', { text: fmt.pct1(p.share) }),
         el('td', { text: fmt.int(p.clk) }), el('td', { text: fmt.dec1(p.conv) }), el('td', { text: fmt.money(div(p.cost, p.conv)) }), el('td', { text: fmt.money(p.val) }))))));
   }
-}
-
-// ----- Bảng chiến dịch -----
-const LEVELS = {
-  'Cảnh báo': ['critical', '!'], 'Cần kiểm tra': ['serious', '?'], 'Tốt': ['good', '✓'], 'Bình thường': ['neutral', '•'],
-};
-const badge = (lv) => { const [cls, icon] = LEVELS[lv] || ['na', '–']; return el('span', { class: 'badge ' + cls }, el('i', { 'aria-hidden': 'true', text: icon }), lv); };
-const CAMP_COLS = [
-  ['name', 'Chiến dịch', (c) => c.name, 'l'], ['type', 'Loại', (c) => c.type, 'l'], ['prod', 'Nhóm sản phẩm', (c) => c.prod, 'l'], ['obj', 'Mục tiêu', (c) => c.obj, 'l'],
-  ['cost', 'Chi phí', (c) => fmt.money(c.cost)], ['share', 'Tỷ trọng', (c) => fmt.pct1(c.share)], ['impr', 'Hiển thị', (c) => fmt.int(c.impr)],
-  ['clk', 'Lượt nhấp', (c) => fmt.int(c.clk)], ['ctr', 'CTR', (c) => fmt.pct(c.ctr)], ['cpc', 'CPC', (c) => fmt.money(c.cpc)], ['cpm', 'CPM', (c) => fmt.money(c.cpm)],
-  ['conv', 'Chuyển đổi', (c) => fmt.dec1(c.conv)], ['cpa', 'CPA', (c) => fmt.money(c.cpa)], ['val', 'Giá trị CĐ', (c) => fmt.money(c.val)], ['roas', 'ROAS', (c) => fmt.dec2(c.roas)],
-  ['lead', 'Lead', (c) => (DB.hasLead ? fmt.int(c.lead) : 'Chưa có dữ liệu')], ['cpl', 'CPL', (c) => (DB.hasLead ? fmt.money(c.cpl) : 'Chưa có dữ liệu')],
-  ['purch', 'Purchase', (c) => (DB.hasPurchase ? fmt.int(c.purch) : 'Chưa có dữ liệu')], ['level', 'Đánh giá', (c) => badge(c.level), 'l'], ['reason', 'Lý do', (c) => c.reason, 'reason'],
-];
-function renderCampTable(camps) {
-  const { key, dir } = state.sort;
-  const list = [...camps.list].sort((a, b) => {
-    const x = a[key], y = b[key];
-    if (typeof x === 'string' || typeof y === 'string') return dir * String(x ?? '').localeCompare(String(y ?? ''), 'vi');
-    if (!isNum(x)) return 1;
-    if (!isNum(y)) return -1;
-    return dir * (x - y);
-  });
-  $('camp-sub').textContent = `${list.length} chiến dịch có chi phí trong kỳ. Bấm tiêu đề cột để sắp xếp, bấm một dòng để lọc theo chiến dịch đó.`;
-  const box = $('camp-table');
-  box.textContent = '';
-  if (!list.length) { box.append(el('p', { class: 'muted', style: 'padding:12px', text: 'Không có dữ liệu trong kỳ và bộ lọc đang chọn.' })); return; }
-  const head = el('tr', {}, CAMP_COLS.map(([k, label, , cls]) => el('th', { class: cls === 'reason' ? 'l' : cls || null, 'aria-sort': k === key ? (dir > 0 ? 'ascending' : 'descending') : null },
-    el('button', { type: 'button', text: label + (k === key ? (dir > 0 ? ' ▲' : ' ▼') : ''),
-      onclick: () => { state.sort = { key: k, dir: k === key ? -dir : CAMP_COLS.find((c) => c[0] === k)[3] ? 1 : -1 }; renderCampTable(camps); } }))));
-  const body = list.map((c) => {
-    const tr = el('tr', { class: 'click', title: state.camp === c.name ? 'Bấm để bỏ lọc chiến dịch này' : 'Bấm để lọc theo chiến dịch này' },
-      CAMP_COLS.map(([k, , f, cls]) => el('td', { class: cls || null, title: k === 'name' ? c.name : null }, f(c))));
-    tr.addEventListener('click', () => { state.camp = state.camp === c.name ? '' : c.name; render(); });
-    return tr;
-  });
+  $('ga-camp-sub').textContent = `${camps.list.length} chiến dịch có chi phí trong kỳ. Bấm tiêu đề cột để sắp xếp, bấm một dòng để lọc theo chiến dịch đó.`;
   const t = camps.list.reduce((s, c) => { for (const k of ['cost', 'impr', 'clk', 'conv', 'val']) s[k] += c[k]; return s; }, { cost: 0, impr: 0, clk: 0, conv: 0, val: 0 });
-  const foot = el('tr', {}, el('td', { text: 'Tổng' }), el('td'), el('td'), el('td'), el('td', { text: fmt.money(t.cost) }), el('td', { text: fmt.pct1(1) }),
+  const foot = [el('td', { text: 'Tổng' }), el('td'), el('td'), el('td'), el('td', { text: fmt.money(t.cost) }), el('td', { text: fmt.pct1(1) }),
     el('td', { text: fmt.int(t.impr) }), el('td', { text: fmt.int(t.clk) }), el('td', { text: fmt.pct(div(t.clk, t.impr)) }), el('td', { text: fmt.money(div(t.cost, t.clk)) }),
     el('td', { text: fmt.money(t.impr > 0 ? (t.cost / t.impr) * 1000 : null) }), el('td', { text: fmt.dec1(t.conv) }), el('td', { text: fmt.money(div(t.cost, t.conv)) }),
-    el('td', { text: fmt.money(t.val) }), el('td', { text: fmt.dec2(t.cost > 0 && t.val > 0 ? t.val / t.cost : null) }), el('td'), el('td'), el('td'), el('td'), el('td'));
-  box.append(el('table', {}, el('thead', {}, head), el('tbody', {}, body), el('tfoot', {}, foot)));
+    el('td', { text: fmt.money(t.val) }), el('td', { text: fmt.dec2(t.cost > 0 && t.val > 0 ? t.val / t.cost : null) }), el('td'), el('td'), el('td'), el('td'), el('td')];
+  sortableTable($('ga-camp-table'), 'ga', camps.list, GA_COLS, (c) => { state.camp = state.camp === c.name ? '' : c.name; render(); }, state.camp, foot);
+  monthTable($('ga-months'), GA.rows.filter((r) => inRange(r, P.from, P.to) && gaPass(r)), P, GA.maxDay,
+    ['Chi phí', 'Hiển thị', 'Lượt nhấp', 'CTR', 'CPC', 'Chuyển đổi', 'CPA', 'Giá trị CĐ', 'ROAS'], (rows) => {
+      const s = agg(rows);
+      return [fmt.money(s.cost), fmt.int(s.impr), fmt.int(s.clk), fmt.pct(div(s.clk, s.impr)), fmt.money(div(s.cost, s.clk)), fmt.dec1(s.conv),
+        fmt.money(div(s.cost, s.conv)), fmt.money(s.val), fmt.dec2(s.cost > 0 && s.val > 0 ? s.val / s.cost : null)];
+    });
+}
+function gaComments(P, cur, prev, camps) {
+  if (!cur.n) { comments('ga-comments', ['Không có chiến dịch nào có số liệu trong kỳ và bộ lọc đang chọn.']); return; }
+  const { an, chg } = GA.cfg;
+  const m = fmt.money;
+  const lines = [`Chi phí ${m(cur.cost)} trong ${P.n} ngày; ` + changeText(cur.cost, prev.n ? prev.cost : 0, P)];
+  const cpcCh = isNum(cur.cpc) && prev.n && isNum(prev.cpc) && prev.cpc ? cur.cpc / prev.cpc - 1 : null;
+  lines.push(`CPC ${m(cur.cpc)}, CTR ${fmt.pct(cur.ctr)}` + (prev.n && isNum(prev.cpc) ? ` (kỳ trước CPC ${m(prev.cpc)}, CTR ${fmt.pct(prev.ctr)})` : '') + '. ' +
+    (isNum(cpcCh) ? (Math.abs(cpcCh) > chg ? `CPC biến động ${fmt.signed(cpcCh)}, vượt ngưỡng ±${fmt.pct0(chg)}.` : `Biến động CPC trong ngưỡng ±${fmt.pct0(chg)}.`) : ''));
+  let s3 = `Chuyển đổi ${fmt.dec1(cur.conv)}, CPA ${m(cur.cpa)}, chuyển đổi / lượt nhấp ${fmt.pct1(cur.cvr)}. `;
+  if (isNum(cur.cvr) && cur.cvr > an) {
+    s3 += `Tỷ lệ này vượt ngưỡng ${fmt.pct0(an)}: có thể Google đang tính cả hành động phụ là chuyển đổi chính; cần kiểm tra GA_Ánh xạ chuyển đổi và mục Mục tiêu trong Google Ads.`;
+    const byAction = new Map();
+    let tot = 0;
+    for (const r of GA.conv) if (inRange(r, P.from, P.to) && gaPass(r)) { byAction.set(r.action, (byAction.get(r.action) || 0) + r.conv); tot += r.conv; }
+    const top = [...byAction.entries()].sort((a, b) => b[1] - a[1])[0];
+    if (top && tot > 0) s3 += ` Conversion action đóng góp nhiều nhất: “${top[0]}” (${fmt.pct1(top[1] / tot)} số chuyển đổi).`;
+  } else s3 += 'Chuyển đổi Google không phải số đơn hàng.';
+  lines.push(s3);
+  lines.push(cur.val > 0 ? `Giá trị chuyển đổi ${m(cur.val)}, ROAS ${fmt.dec2(cur.roas)}. Đây là giá trị gán trong Google Ads, không phải doanh thu thực thu.`
+    : 'Chưa ghi nhận giá trị chuyển đổi nên chưa tính được ROAS. Doanh thu thực thu cần nguồn CRM.');
+  const list = [...camps.list].sort((a, b) => b.cost - a.cost);
+  if (list.length) lines.push(`Chiến dịch chi nhiều nhất: ${list[0].name} (${fmt.pct1(list[0].share)} chi phí kỳ này, mục tiêu: ${list[0].obj}).`);
+  const noProd = list.filter((c) => c.prod === UNCLASSIFIED), noObj = list.filter((c) => c.obj === UNCLASSIFIED);
+  lines.push(!noProd.length && !noObj.length ? 'Tất cả chiến dịch trong kỳ đã có nhóm sản phẩm và mục tiêu.'
+    : `${noProd.length} chiến dịch chưa có nhóm sản phẩm (${fmt.pct1(sumBy(noProd, 'share'))} chi phí) và ${noObj.length} chiến dịch chưa có mục tiêu; vẫn được tính vào tổng. Điền trong GA_Ánh xạ chiến dịch.`);
+  lines.push(!GA.hasLead && !GA.hasPurchase ? 'Chưa xác nhận conversion action nào là Lead hoặc Purchase, nên Lead, CPL, Purchase hiển thị “Chưa có dữ liệu”. Điền cột Loại trong GA_Ánh xạ chuyển đổi.'
+    : `Lead: ${GA.hasLead ? fmt.int(cur.lead) + (isNum(cur.cpl) ? ', CPL ' + m(cur.cpl) : '') : 'chưa xác nhận'}   ·   Purchase: ${GA.hasPurchase ? fmt.int(cur.purch) + (isNum(cur.cpp) ? ', chi phí/purchase ' + m(cur.cpp) : '') : 'chưa xác nhận'}.`);
+  lines.push(levelSummary(list, GA.cfg, true));
+  comments('ga-comments', lines);
+}
+function levelSummary(list, cfg, withUnclassified) {
+  const cnt = (lv) => list.filter((c) => c.level === lv).length;
+  const u = cnt(LV.noObj), nd = cnt('Chưa có định nghĩa Lead') + cnt('Chưa có định nghĩa Purchase');
+  return `Đánh giá ${list.length} chiến dịch: ${cnt(LV.warn)} cảnh báo, ${cnt(LV.check)} cần kiểm tra, ${cnt(LV.good)} tốt, ${cnt(LV.ok)} bình thường, ${cnt(LV.low)} chưa đủ dữ liệu` +
+    (withUnclassified && u ? `, ${u} chưa phân loại mục tiêu (chưa đánh giá được; điền cột Mục tiêu trong GA_Ánh xạ chiến dịch)` : '') + (nd ? `, ${nd} chờ xác nhận Lead/Purchase` : '') +
+    `. So với trung vị các chiến dịch cùng mục tiêu, ngưỡng ±${fmt.pct0(cfg.thr)}; chỉ đánh giá khi có từ ${fmt.int(cfg.minI)} hiển thị và ${fmt.money(cfg.minC)} chi phí.`;
 }
 
-// ----- Theo tháng -----
-function renderMonths(P) {
-  const groups = new Map();
-  for (const r of DB.rows) {
-    if (!inRange(r, P.from, P.to) || !passDims(r)) continue;
-    const k = monthKey(r.d);
-    let g = groups.get(k);
-    if (!g) groups.set(k, g = { k, rows: [], days: new Set() });
-    g.rows.push(r); g.days.add(r.d);
-  }
-  const box = $('month-table');
-  box.textContent = '';
-  const list = [...groups.values()].sort((a, b) => b.k - a.k);
-  if (!list.length) { box.append(el('p', { class: 'muted', style: 'padding:12px', text: 'Chưa có dữ liệu.' })); return; }
-  const rows = list.map((g) => {
-    const s = agg(g.rows), any = g.rows[0].d;
-    const a = Math.max(P.from, monthStart(any)), b = Math.min(P.to, monthEnd(any), DB.maxDay);
-    const partial = a > monthStart(any) || b < monthEnd(any);
-    const label = `${pad(g.k % 100)}/${Math.floor(g.k / 100)}` + (partial ? ` (${fmtDM(a)} – ${fmtDM(b)})` : '');
-    return el('tr', {}, el('td', { text: label }), el('td', { text: fmt.money(s.cost) }), el('td', { text: fmt.int(s.impr) }), el('td', { text: fmt.int(s.clk) }),
-      el('td', { text: fmt.pct(div(s.clk, s.impr)) }), el('td', { text: fmt.money(div(s.cost, s.clk)) }), el('td', { text: fmt.dec1(s.conv) }),
-      el('td', { text: fmt.money(div(s.cost, s.conv)) }), el('td', { text: fmt.money(s.val) }), el('td', { text: fmt.dec2(s.cost > 0 && s.val > 0 ? s.val / s.cost : null) }));
-  });
-  box.append(el('table', {},
-    el('thead', {}, el('tr', {}, ['Tháng', 'Chi phí', 'Hiển thị', 'Lượt nhấp', 'CTR', 'CPC', 'Chuyển đổi', 'CPA', 'Giá trị CĐ', 'ROAS'].map((h) => el('th', { text: h })))),
-    el('tbody', {}, rows)));
+// ===== Facebook Ads =====
+const FB_ROW1 = [
+  ['Chi phí', 'cost', 'money', 0], ['Lượt hiển thị', 'impr', 'int', 1], ['CPM', 'cpm', 'money', -1],
+  ['Lượt nhấp liên kết', 'link', 'int', 1, 'Lượt nhấp dẫn tới đích quảng cáo; khác lượt nhấp Google'], ['CTR liên kết', 'ctrLink', 'pct', 1], ['CPC liên kết', 'cpcLink', 'money', -1],
+  ['Xem trang đích', 'lpv', 'int', 1], ['ThruPlay', 'thru', 'int', 1, 'Video xem hết hoặc ít nhất 15 giây; không tương đương chỉ số video Google'], ['Chi phí / ThruPlay', 'cpThru', 'money', -1],
+];
+const FB_ROW2 = [
+  ['Xem video 25% / hiển thị', 'r25', 'pct', 1], ['Xem video 50% / hiển thị', 'r50', 'pct', 1], ['Tin nhắn bắt đầu', 'msg', 'int', 1],
+  ['Lead', 'lead', 'int', 1], ['Purchase', 'purch', 'int', 1], ['ROAS (Meta)', 'roas', 'dec2', 1, 'Giá trị purchase Meta ghi nhận ÷ chi phí'],
+];
+const FB_COLS = [
+  ['name', 'Chiến dịch', (c) => c.name, 'l'], ['grp', 'Mục tiêu Meta', (c) => FB_GROUP_LABEL[c.grp], 'l'], ['prod', 'Nhóm sản phẩm', (c) => c.prod, 'l'],
+  ['cost', 'Chi phí', (c) => fmt.money(c.cost)], ['share', 'Tỷ trọng', (c) => fmt.pct1(c.share)], ['impr', 'Hiển thị', (c) => fmt.int(c.impr)],
+  ['cpm', 'CPM', (c) => fmt.money(c.cpm)], ['link', 'Nhấp liên kết', (c) => fmt.int(c.link)], ['ctrLink', 'CTR liên kết', (c) => fmt.pct(c.ctrLink)],
+  ['cpcLink', 'CPC liên kết', (c) => fmt.money(c.cpcLink)], ['lpv', 'Xem trang đích', (c) => fmt.int(c.lpv)], ['thru', 'ThruPlay', (c) => fmt.int(c.thru)],
+  ['r25', 'Video 25%', (c) => fmt.pct(c.r25)], ['r50', 'Video 50%', (c) => fmt.pct(c.r50)],
+  ['rName', 'Kết quả chính', (c) => c.rName, 'l'], ['rCount', 'Số kết quả', (c) => fmt.int(c.rCount)], ['rCost', 'Chi phí/kết quả', (c) => (c.grp === 'aw' ? fmt.money(c.cpm) + ' /1.000' : fmt.money(c.rCost))],
+  ['level', 'Đánh giá', (c) => badge(c.level), 'l'], ['reason', 'Lý do', (c) => c.reason, 'reason'],
+];
+function renderFB(P) {
+  const cur = fbKpis(P.from, P.to), prev = fbKpis(P.pFrom, P.pTo);
+  const camps = fbCampaigns(P);
+  kpiTiles('fb-kpis-1', FB_ROW1, cur, prev);
+  kpiTiles('fb-kpis-2', FB_ROW2, cur, prev);
+  periodTrend('fb', P, FBD.rows, fbPass, FB_SUM, FB_METRICS);
+  campAlloc('fb-alloc-camp', camps, state.fbCamp, (k) => { state.fbCamp = state.fbCamp === k ? '' : k; render(); }, 'fb');
+  const byGrp = new Map();
+  for (const c of camps.list) byGrp.set(c.grp, (byGrp.get(c.grp) || 0) + c.cost);
+  barList($('fb-alloc-obj'), [...byGrp.entries()].map(([g, cost]) => ({ key: g, label: FB_GROUP_LABEL[g], cost, share: camps.total > 0 ? cost / camps.total : 0 }))
+    .sort((a, b) => b.cost - a.cost), state.fbObj, (k) => { state.fbObj = state.fbObj === k ? '' : k; render(); }, 'fb');
+  $('fb-camp-sub').textContent = `${camps.list.length} chiến dịch có chi phí trong kỳ. Bấm tiêu đề cột để sắp xếp, bấm một dòng để lọc theo chiến dịch đó.`;
+  const sums = { n: camps.list.length };
+  FB_SUM.forEach((k) => { sums[k] = sumBy(camps.list, k); });
+  const tt = fbDerive(sums);
+  const foot = [el('td', { text: 'Tổng' }), el('td'), el('td'), el('td', { text: fmt.money(tt.cost) }), el('td', { text: fmt.pct1(1) }), el('td', { text: fmt.int(tt.impr) }),
+    el('td', { text: fmt.money(tt.cpm) }), el('td', { text: fmt.int(tt.link) }), el('td', { text: fmt.pct(tt.ctrLink) }), el('td', { text: fmt.money(tt.cpcLink) }),
+    el('td', { text: fmt.int(tt.lpv) }), el('td', { text: fmt.int(tt.thru) }), el('td', { text: fmt.pct(tt.r25) }), el('td', { text: fmt.pct(tt.r50) }),
+    el('td'), el('td'), el('td'), el('td'), el('td')];
+  sortableTable($('fb-camp-table'), 'fb', camps.list, FB_COLS, (c) => { state.fbCamp = state.fbCamp === c.name ? '' : c.name; render(); }, state.fbCamp, foot);
+  monthTable($('fb-months'), FBD.rows.filter((r) => inRange(r, P.from, P.to) && fbPass(r)), P, FBD.maxDay,
+    ['Chi phí', 'Hiển thị', 'CPM', 'Nhấp liên kết', 'CTR liên kết', 'CPC liên kết', 'Xem trang đích', 'ThruPlay', 'Chi phí/ThruPlay'], (rows) => {
+      const s = fbDerive(fbAgg(rows));
+      return [fmt.money(s.cost), fmt.int(s.impr), fmt.money(s.cpm), fmt.int(s.link), fmt.pct(s.ctrLink), fmt.money(s.cpcLink), fmt.int(s.lpv), fmt.int(s.thru), fmt.money(s.cpThru)];
+    });
+
+  // Nhận xét.
+  if (!cur.n) { comments('fb-comments', ['Không có chiến dịch Facebook nào có số liệu trong kỳ và bộ lọc đang chọn.']); return; }
+  const cfg = GA ? GA.cfg : { chg: 0.2, thr: 0.3, minI: 1000, minC: 500000 };
+  const m = fmt.money;
+  const lines = [`Chi phí Facebook ${m(cur.cost)} trong ${P.n} ngày; ` + changeText(cur.cost, prev.n ? prev.cost : 0, P)];
+  const cpmCh = prev.n && isNum(prev.cpm) && isNum(cur.cpm) && prev.cpm ? cur.cpm / prev.cpm - 1 : null;
+  lines.push(`CPM ${m(cur.cpm)}, CTR liên kết ${fmt.pct(cur.ctrLink)}, CPC liên kết ${m(cur.cpcLink)}` +
+    (prev.n ? ` (kỳ trước CPM ${m(prev.cpm)}, CTR liên kết ${fmt.pct(prev.ctrLink)}, CPC liên kết ${m(prev.cpcLink)})` : '') + '. ' +
+    (isNum(cpmCh) ? (Math.abs(cpmCh) > cfg.chg ? `CPM biến động ${fmt.signed(cpmCh)}, vượt ngưỡng ±${fmt.pct0(cfg.chg)}.` : `Biến động CPM trong ngưỡng ±${fmt.pct0(cfg.chg)}.`) : ''));
+  lines.push(`Video: ${fmt.int(cur.thru)} ThruPlay (${m(cur.cpThru)}/ThruPlay); ${fmt.pct(cur.r25)} lượt hiển thị xem tới 25%, ${fmt.pct(cur.r50)} xem tới 50%.` +
+    (cur.lpv ? ` Xem trang đích ${fmt.int(cur.lpv)} (${m(cur.cpLpv)}/lượt), bằng ${fmt.pct1(div(cur.lpv, cur.link))} số lượt nhấp liên kết.` : ''));
+  const grpShare = [...camps.list.reduce((mp, c) => mp.set(c.grp, (mp.get(c.grp) || 0) + c.cost), new Map()).entries()].sort((a, b) => b[1] - a[1]);
+  if (grpShare.length) lines.push('Phân bổ theo mục tiêu Meta: ' + grpShare.map(([g, c]) => `${FB_GROUP_LABEL[g]} ${fmt.pct1(camps.total > 0 ? c / camps.total : 0)}`).join(', ') + '.');
+  if (!cur.msg && !cur.lead && !cur.purch) lines.push('Kỳ này không ghi nhận tin nhắn, lead hay purchase từ Facebook; hiệu quả được đánh giá theo chi phí tiếp cận, lượt nhấp và lượt xem video.');
+  else lines.push(`Kết quả chuyển đổi Meta ghi nhận: tin nhắn ${fmt.int(cur.msg)}, lead ${fmt.int(cur.lead)}, purchase ${fmt.int(cur.purch)}` + (cur.pval ? `, giá trị purchase ${m(cur.pval)} (ROAS ${fmt.dec2(cur.roas)})` : '') + '.');
+  const list = [...camps.list].sort((a, b) => b.cost - a.cost);
+  if (list.length) lines.push(`Chiến dịch chi nhiều nhất: ${list[0].name} (${fmt.pct1(list[0].share)} chi phí, mục tiêu ${FB_GROUP_LABEL[list[0].grp]}).`);
+  const noProd = list.filter((c) => c.prod === UNCLASSIFIED);
+  if (noProd.length) lines.push(`${noProd.length} chiến dịch chưa có nhóm sản phẩm (${fmt.pct1(sumBy(noProd, 'share'))} chi phí); vẫn được tính vào tổng. Điền trong FB_Ánh xạ chiến dịch.`);
+  lines.push(levelSummary(list, cfg, false));
+  comments('fb-comments', lines);
 }
 
 // ===== Đăng nhập Google và tải dữ liệu =====
+let LOADED_AT = new Date();
 function showGate(kind, message, detail) {
   $('app').classList.add('hidden');
   $('sync').classList.add('hidden');
@@ -956,7 +1424,7 @@ function showGate(kind, message, detail) {
       el('p', { class: 'detail', text: 'Hướng dẫn chi tiết: README.md trong cùng repo.' }));
     return;
   }
-  g.append(el('h2', { text: kind === 'loading' ? 'Đang đọc số liệu…' : 'Báo cáo hiệu quả Google Ads' }));
+  g.append(el('h2', { text: kind === 'loading' ? 'Đang đọc số liệu…' : 'Báo cáo hiệu quả Digital Ads · Microlife' }));
   if (kind === 'loading') { g.append(el('p', { text: 'Đang đọc Google Sheet báo cáo.' })); return; }
   g.append(el('p', { text: 'Đăng nhập bằng tài khoản Google đã được chia sẻ Google Sheet báo cáo để xem số liệu. Trang chỉ xin quyền đọc bảng tính và không lưu lại số liệu hay mật khẩu.' }));
   if (message) g.append(el('p', { class: 'err', text: message }));
@@ -984,47 +1452,68 @@ function signIn() {
   tokenClient.requestAccessToken();
 }
 
+class SheetError extends Error {
+  constructor(status, message) { super(message); this.status = status; }
+}
+async function batchGet(ranges) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(SHEET_ID)}/values:batchGet?` +
+    ranges.map((r) => 'ranges=' + encodeURIComponent(r)).join('&') + '&valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=SERIAL_NUMBER';
+  const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+  if (res.ok) return res.json();
+  let msg = '';
+  try { msg = (await res.json()).error.message || ''; } catch (e) { /* bỏ qua */ }
+  throw new SheetError(res.status, msg);
+}
+
 async function load() {
-  if (DB) document.body.classList.add('loading'); else showGate('loading');
+  if (GA) document.body.classList.add('loading'); else showGate('loading');
   try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(SHEET_ID)}/values:batchGet?` +
-      RANGES.map((r) => 'ranges=' + encodeURIComponent(r)).join('&') + '&valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=SERIAL_NUMBER';
-    const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
-    if (!res.ok) {
-      let msg = '';
-      try { msg = (await res.json()).error.message || ''; } catch (e) { /* bỏ qua */ }
-      if (res.status === 401) { token = null; DB = null; showGate('signin', 'Phiên đăng nhập đã hết hạn. Đăng nhập lại để tiếp tục.'); return; }
-      if (res.status === 403 && /has not been used|disabled/i.test(msg)) { DB = null; showGate('signin', 'Google Sheets API chưa được bật trong dự án Google Cloud chứa OAuth Client ID này.', msg); return; }
-      if (res.status === 403) { DB = null; showGate('signin', 'Tài khoản Google vừa đăng nhập chưa được chia sẻ quyền xem Google Sheet báo cáo. Nhờ người quản lý chia sẻ (quyền Người xem) rồi đăng nhập lại.', msg); return; }
-      if (res.status === 404) { DB = null; showGate('signin', 'Không tìm thấy Google Sheet báo cáo. Kiểm tra SPREADSHEET_ID trong file index.html.', msg); return; }
-      throw new Error(`Google Sheets trả lỗi ${res.status}. ${msg}`);
+    const gaBatch = await batchGet(GA_RANGES);
+    let fbBatch = null;
+    try { fbBatch = await batchGet(FB_RANGES); } catch (e) {
+      if (e.status === 401) throw e;
+      fbBatch = null;
+      FB_NOTE = e.status === 400 ? 'Sheet chưa có các tab FB_; cài script Facebook Ads rồi chạy “Đồng bộ ngay”' : `lỗi ${e.status}`;
     }
-    loadBatch(await res.json());
+    loadBatch(gaBatch, fbBatch);
   } catch (e) {
-    DB = null;
-    showGate('signin', 'Không đọc được số liệu.', String(e && e.message || e));
+    GA = null; FBD = null;
+    const msg = e.message || '';
+    if (e.status === 401) { token = null; showGate('signin', 'Phiên đăng nhập đã hết hạn. Đăng nhập lại để tiếp tục.'); return; }
+    if (e.status === 403 && /has not been used|disabled/i.test(msg)) { showGate('signin', 'Google Sheets API chưa được bật trong dự án Google Cloud chứa OAuth Client ID này.', msg); return; }
+    if (e.status === 403) { showGate('signin', 'Tài khoản Google vừa đăng nhập chưa được chia sẻ quyền xem Google Sheet báo cáo. Nhờ người quản lý chia sẻ (quyền Người xem) rồi đăng nhập lại.', msg); return; }
+    if (e.status === 404) { showGate('signin', 'Không tìm thấy Google Sheet báo cáo. Kiểm tra SPREADSHEET_ID trong file index.html.', msg); return; }
+    showGate('signin', 'Không đọc được số liệu.', e.status ? `Google Sheets trả lỗi ${e.status}. ${msg}` : String(msg || e));
   } finally {
     document.body.classList.remove('loading');
   }
 }
 
-function loadBatch(batch) {
-  DB = parseBatch(batch);
-  if (!DB.rows.length) { showGate('signin', 'Google Sheet chưa có dòng dữ liệu nào trong GA_Dữ liệu ngày.'); return; }
+function loadBatch(gaBatch, fbBatch) {
+  GA = parseGA(gaBatch);
+  if (!GA.rows.length) { showGate('signin', 'Google Sheet chưa có dòng dữ liệu nào trong GA_Dữ liệu ngày.'); return; }
+  FBD = null;
+  if (fbBatch) {
+    try {
+      const fb = parseFB(fbBatch);
+      if (fb.rows.length) FBD = fb; else FB_NOTE = 'tab FB_Dữ liệu ngày chưa có dòng nào';
+    } catch (e) { FB_NOTE = e.message; }
+  }
+  LOADED_AT = new Date();
   $('gate').classList.add('hidden');
   $('app').classList.remove('hidden');
   $('btn-reload').classList.toggle('hidden', !token);
   $('btn-signout').classList.toggle('hidden', !token);
   renderSync();
   render();
-  $('footer').textContent = `Nguồn: Google Sheet ${SHEET_ID} (GA_Dữ liệu ngày, GA_Chuyển đổi theo action, GA_Ánh xạ chuyển đổi, GA_Cấu hình, GA_Nhật ký), đọc bằng quyền của tài khoản đang đăng nhập.`;
+  $('footer').textContent = `Nguồn: Google Sheet ${SHEET_ID} (các tab GA_ và FB_), đọc bằng quyền của tài khoản đang đăng nhập.`;
 }
 
 // ===== Sự kiện =====
 $('btn-reload').addEventListener('click', () => (token ? load() : signIn()));
 $('btn-signout').addEventListener('click', () => {
   if (token && window.google && google.accounts) google.accounts.oauth2.revoke(token, () => {});
-  token = null; DB = null;
+  token = null; GA = null; FBD = null;
   showGate('signin');
 });
 const onDate = () => {
@@ -1035,14 +1524,14 @@ const onDate = () => {
 };
 $('f-from').addEventListener('change', onDate);
 $('f-to').addEventListener('change', onDate);
-for (const [id, key] of [['f-acc', 'acc'], ['f-camp', 'camp'], ['f-type', 'type'], ['f-prod', 'prod']]) {
+for (const [id, key] of [['f-acc', 'acc'], ['f-camp', 'camp'], ['f-type', 'type'], ['f-prod', 'prod'], ['f-fbcamp', 'fbCamp'], ['f-fbobj', 'fbObj']]) {
   $(id).addEventListener('change', (e) => { state[key] = e.target.value; render(); });
 }
-$('f-clear').addEventListener('click', () => { Object.assign(state, { preset: '30', from: null, to: null, acc: '', camp: '', type: '', prod: '' }); render(); });
+$('f-clear').addEventListener('click', () => { Object.assign(state, DEFAULT_FILTERS); render(); });
 let resizeTimer;
-window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (DB) renderTrend(period()); }, 150); });
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (GA) render(); }, 150); });
 
-window.GA = { loadBatch }; // dùng khi kiểm thử với dữ liệu xuất sẵn
+window.GA_TEST = { loadBatch }; // dùng khi kiểm thử với dữ liệu xuất sẵn
 showGate(CONFIG.CLIENT_ID ? 'signin' : 'setup');
 </script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
