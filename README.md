@@ -1,16 +1,30 @@
-# Báo cáo hiệu quả Google Ads (trang web)
+# Báo cáo hiệu quả Digital Ads · Microlife (trang web)
 
 Trang `index.html` đọc trực tiếp Google Sheet **[ML] Báo cáo Google Ads – tự động** bằng tài khoản Google của người xem.
 
-- Trên trang có thể đổi khoảng ngày, lọc theo tài khoản, chiến dịch, loại chiến dịch và nhóm sản phẩm.
-- Trang hiển thị thẻ KPI so với kỳ trước, biểu đồ xu hướng, phân bổ chi phí, bảng chiến dịch kèm đánh giá, và tổng hợp theo tháng.
+Trang có 3 phần:
+
+- **Tổng thể:** chi phí và lượt hiển thị của Google Ads và Facebook Ads cộng chung; lượt nhấp và kết quả đặt cạnh nhau vì mỗi nền tảng định nghĩa khác nhau.
+- **Google Ads:** số liệu từ các tab `GA_` do Google Ads Script ghi.
+- **Facebook Ads:** số liệu từ các tab `FB_` do Apps Script `facebook-sang-sheets.gs` ghi.
+
+Trên trang có thể đổi khoảng ngày và lọc theo nhóm sản phẩm. Phần Google Ads lọc thêm được theo tài khoản, chiến dịch và loại chiến dịch; phần Facebook Ads lọc được theo chiến dịch và mục tiêu Meta. Mỗi phần có thẻ KPI so với kỳ trước, biểu đồ xu hướng, phân bổ chi phí, bảng chiến dịch kèm đánh giá và tổng hợp theo tháng.
+
+## Nguồn Facebook Ads (Apps Script trong Sheet)
+
+1. Trong Google Sheet: **Tiện ích mở rộng → Apps Script**, dán nội dung `facebook-sang-sheets.gs`, bấm Lưu, rồi tải lại Sheet.
+2. Tạo token Meta: Meta Business Settings → **System users** → gán tài khoản quảng cáo với quyền xem hiệu quả → **Generate new token**, chọn quyền `ads_read`, hạn **Never**.
+3. Trong Sheet, chọn menu **Facebook Ads → Nhập / đổi token Meta** rồi dán token. Token chỉ nằm trong Script Properties của dự án Apps Script, không nằm trong ô nào của Sheet, nên người chỉ có quyền xem Sheet không thấy.
+4. Chọn **Facebook Ads → Đồng bộ ngay**, rồi **Bật lịch chạy hằng ngày** (khoảng 6–7 giờ sáng).
+
+Script chỉ đọc số liệu từ Meta, mỗi lần chạy lấy lại 30 ngày gần nhất. Tài khoản quảng cáo, ngày bắt đầu và phiên bản Graph API chỉnh trong tab `FB_Cấu hình`. Muốn xem phân bổ theo sản phẩm, điền cột Nhóm sản phẩm trong `FB_Ánh xạ chiến dịch`.
 
 **Về quyền xem:**
 
 - Trong repo không có số liệu nào. Ai mở trang cũng phải bấm **Đăng nhập Google**.
 - Chỉ tài khoản được chia sẻ Sheet mới thấy số.
 - Trang chỉ xin quyền **đọc** bảng tính (`spreadsheets.readonly`) và không lưu lại số liệu hay token.
-- Số liệu mới nhất là lần script Google Ads chạy gần nhất (mỗi ngày lúc 5–6 giờ sáng), không theo thời gian thực.
+- Số liệu mới nhất là lần các script chạy gần nhất (Google Ads khoảng 5–6 giờ sáng, Facebook Ads khoảng 6–7 giờ sáng mỗi ngày), không theo thời gian thực.
 
 ---
 
@@ -89,6 +103,8 @@ Trang đọc 5 tab do script Google Ads ghi:
 - `GA_Ánh xạ chuyển đổi`
 - `GA_Cấu hình`
 - `GA_Nhật ký`
+
+và 3 tab do Apps Script Facebook ghi: `FB_Dữ liệu ngày`, `FB_Ánh xạ chiến dịch`, `FB_Nhật ký`. Khi Sheet chưa có các tab `FB_`, trang vẫn chạy với riêng Google Ads và ghi chú rõ điều đó.
 
 Trang tự tính lại mọi chỉ số theo đúng quy tắc của tab GA_Dashboard trong Sheet:
 
